@@ -1,8 +1,7 @@
-const { ipcMain } = require("electron");
-const LoginController = require("../controllers/Login");
+import { ipcMain } from "electron";
+import { login } from "../models/User.js"; 
 
-// Canal de login
 ipcMain.handle("login", async (event, { usuario, senha }) => {
-  const resultado = await LoginController.login(usuario, senha);
-  return resultado;
+  return await login({ user: usuario, password: senha });
 });
+

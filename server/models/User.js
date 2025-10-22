@@ -1,27 +1,11 @@
-const db = require("../db");
-const bcrypt = require("bcryptjs");
+import { conn } from "../db.js";
 
-class UsuarioModel {
-  static async autenticar(usuario, senha) {
-    return new Promise((resolve, reject) => {
-      const sql = "SELECT * FROM usuarios WHERE login = ?";
-      db.query(sql, [usuario], async (err, results) => {
-        if (err) return reject(err);
+export async function login({ user, password }) {
+  const resultado = await conn({ user, password });
 
-        if (results.length === 0) return resolve(null);
-
-        const user = results[0];
-        const senhaCorreta = await bcrypt.compare(senha, user.senha);
-
-        if (!senhaCorreta) return resolve(null);
-
-        resolve({
-          id: user.id,
-          nome: user.nome,
-        });
-      });
-    });
+  if (resultado.success) {
+    return { success: true, message: "Login realizado com sucesso!" };
+  } else {
+    return { success: false, message: "Usuário ou senha incorretos." };
   }
 }
-
-module.exports = UsuarioModel;

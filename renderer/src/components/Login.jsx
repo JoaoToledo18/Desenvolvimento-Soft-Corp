@@ -22,17 +22,13 @@ const Login = () => {
     setMensagem("");
 
     try {
-      // Chama o backend via IPC
       const resposta = await window.ipc.login(usuario, senha);
 
-      if (resposta.sucesso) {
-        setMensagem(`✅ Bem-vindo, ${resposta.usuario.nome}!`);
-        console.log("Usuário logado:", resposta.usuario);
-
-        // Exemplo: redirecionar para outra página
-        // window.location.href = "/home";
+      if (resposta.success) {
+        setMensagem(`✅ Login realizado com sucesso!`);
+        console.log("Resposta do login:", resposta);
       } else {
-        setMensagem(`❌ ${resposta.mensagem}`);
+        setMensagem(`${resposta.message}`);
       }
     } catch (error) {
       console.error("Erro ao fazer login:", error);

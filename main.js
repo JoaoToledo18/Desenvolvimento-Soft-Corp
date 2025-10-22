@@ -1,7 +1,11 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
-const path = require('path');
+import { app, BrowserWindow, ipcMain } from 'electron';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import './server/routers/RoutersIPC.js';
 
-require('./server/routers/RoutersIPC')
+// Corrige __dirname e __filename no ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -9,6 +13,9 @@ function createWindow() {
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: false,
     },
   });
 
@@ -19,5 +26,7 @@ function createWindow() {
 
   win.loadURL(url);
 }
+
+app.disableHardwareAcceleration();
 
 app.whenReady().then(createWindow);

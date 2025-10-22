@@ -2,6 +2,7 @@
   "name": "hamburgueria",
   "version": "1.0.0",
   "main": "main.js",
+  "type":"module",
   "scripts": {
     "start": "concurrently -k \"npm run dev --prefix renderer\" \"wait-on http://localhost:5173 && electron .\"",
     "test": "echo \"Error: no test specified\" && exit 1"
