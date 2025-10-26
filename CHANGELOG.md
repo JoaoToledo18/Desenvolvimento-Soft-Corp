@@ -15,3 +15,6 @@
 - alterações para manter a "sessão" apos fazer login
 - criado canal de comunicação para buscar as permissões do usuario logado
 - tela dashboard/principal começou a ser desenvolvida, menu esta pronto, falta o dashboard
+
+### 26/10
+#### **João e Pedro**
