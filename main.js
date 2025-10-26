@@ -3,7 +3,6 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import './server/routers/RoutersIPC.js';
 
-// Corrige __dirname e __filename no ESM
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 

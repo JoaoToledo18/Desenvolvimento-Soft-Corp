@@ -1,15 +1,18 @@
-import Login from './components/Login'
-import './style/login.css'
+import React, { useState } from "react";
+import Login from "./components/Login";
+import Dashboard from "./Dashboard";
 
 
-function App() {
+export default function App() {
+  const [logado, setLogado] = useState(false);
 
   return (
     <>
-      <Login />
-        
+      {logado ? (
+        <Dashboard />
+      ) : (
+        <Login onLoginSucesso={() => setLogado(true)} />
+      )}
     </>
-  )
+  );
 }
-
-export default App
