@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import Header from "./components/Header";
-import GraficoBarra from "./components/ChartBar";
+import GraficoBarra from "./components/ChartBar"; // importa o gráfico
 
 const DashboardLayout = () => {
   const [tabelas, setTabelas] = useState([]);
   const [selecionado, setSelecionado] = useState(null);
   const [temaEscuro, setTemaEscuro] = useState(false);
-  const [vendas, setVendas] = useState([])
+  const [vendas, setVendas] = useState([]);
+  const [carregandoVendas, setCarregandoVendas] = useState(false);
 
   useEffect(() => {
     const fetchTabelas = async () => {
@@ -19,14 +20,22 @@ const DashboardLayout = () => {
     fetchTabelas();
   }, []);
 
-  useEffect(()=> {
-    const vendas = async () => {
-      const resposta = await window.ipc.getMaioresVendas();
-      if (resposta.success) {
-        setVendas(resposta.vendas)
+  useEffect(() => {
+    const buscarVendas = async () => {
+      setCarregandoVendas(true);
+      try {
+        const resposta = await window.ipc.getMaioresVendas();
+        if (resposta && resposta.success) {
+          setVendas(Array.isArray(resposta.vendas) ? resposta.vendas : []);
+        }
+      } catch (err) {
+        console.error("Erro ao buscar vendas", err);
+      } finally {
+        setCarregandoVendas(false);
       }
-    }
-  })
+    };
+    buscarVendas();
+  }, []);
 
   useEffect(() => {
     document.body.className = temaEscuro
@@ -36,6 +45,10 @@ const DashboardLayout = () => {
 
   const alternarTema = () => setTemaEscuro(!temaEscuro);
   const logout = () => {};
+
+  // Preparar dados para o gráfico
+  const labels = vendas.map((item) => item.produto);
+  const valores = vendas.map((item) => item.totalVendida);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -64,21 +77,33 @@ const DashboardLayout = () => {
             Conteúdo da tabela: {selecionado}
           </h2>
         ) : (
-          <h2 className="text-xl font-semibold mb-4">
-            Selecione uma tabela
-          </h2>
+          <h2 className="text-xl font-semibold mb-4">Selecione uma tabela</h2>
         )}
 
         <div className="w-full min-h-[300px] border-2 border-dashed border-gray-400 dark:border-gray-600 rounded-lg p-4">
-          {
-            vendas
-          }
-          <GraficoBarra 
-            labels={["X-tudo", "X-salada", "X-bacon"]}
-            valores={[10,11,4]}
-            titulo="Maiores vendas"
-            nomeDataset="nº de vendas"
-          />
+          <h3 className="text-lg font-semibold mb-2">Top Vendas</h3>
+          {carregandoVendas ? (
+            <p>Carregando maiores vendas...</p>
+          ) : vendas.length > 0 ? (
+            <>
+              <ul className="list-disc pl-5 space-y-1 mb-4">
+                {vendas.map((item, index) => (
+                  <li key={index}>
+                    {item.produto} — {item.totalVendida} vendas
+                  </li>
+                ))}
+              </ul>
+              {/* Gráfico de barras */}
+              <GraficoBarra
+                labels={labels}
+                valores={valores}
+                titulo="Top Vendas"
+                nomeDataset="Quantidade Vendida"
+              />
+            </>
+          ) : (
+            <p>Nenhuma venda encontrada.</p>
+          )}
         </div>
       </main>
     </div>

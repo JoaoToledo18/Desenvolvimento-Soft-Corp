@@ -1,7 +1,7 @@
 import mysql from "mysql2/promise";
 
 const HOST = "localhost";
-const DATABASE = "hamburgueria";
+const DATABASE = "siscorp";
 
 let lastCredentials = null;
 
