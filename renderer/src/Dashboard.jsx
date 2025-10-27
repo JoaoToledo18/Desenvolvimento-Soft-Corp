@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Header from "./components/Header";
+import GraficoBarra from "./components/ChartBar";
 
 const DashboardLayout = () => {
   const [tabelas, setTabelas] = useState([]);
@@ -58,7 +59,14 @@ const DashboardLayout = () => {
           </h2>
         )}
 
-        <div className="w-full min-h-[300px] border-2 border-dashed border-gray-400 dark:border-gray-600 rounded-lg p-4"></div>
+        <div className="w-full min-h-[300px] border-2 border-dashed border-gray-400 dark:border-gray-600 rounded-lg p-4">
+          <GraficoBarra 
+            labels={["X-tudo", "X-salada", "X-bacon"]}
+            valores={[10,11,4]}
+            titulo="Maiores vendas"
+            nomeDataset="nº de vendas"
+          />
+        </div>
       </main>
     </div>
   );
