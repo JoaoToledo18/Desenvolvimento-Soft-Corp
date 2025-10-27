@@ -8,4 +8,7 @@ contextBridge.exposeInMainWorld("ipc", {
   getPermissions: async () => {
   return await ipcRenderer.invoke("get-permissions");
   },
+  getMaioresVendas: async () => {
+    return await ipcRenderer.invoke("get-MaioresVendas");
+  }
 });

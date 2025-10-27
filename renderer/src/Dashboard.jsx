@@ -6,6 +6,7 @@ const DashboardLayout = () => {
   const [tabelas, setTabelas] = useState([]);
   const [selecionado, setSelecionado] = useState(null);
   const [temaEscuro, setTemaEscuro] = useState(false);
+  const [vendas, setVendas] = useState([])
 
   useEffect(() => {
     const fetchTabelas = async () => {
@@ -17,6 +18,15 @@ const DashboardLayout = () => {
     };
     fetchTabelas();
   }, []);
+
+  useEffect(()=> {
+    const vendas = async () => {
+      const resposta = await window.ipc.getMaioresVendas();
+      if (resposta.success) {
+        setVendas(resposta.vendas)
+      }
+    }
+  })
 
   useEffect(() => {
     document.body.className = temaEscuro
@@ -60,6 +70,9 @@ const DashboardLayout = () => {
         )}
 
         <div className="w-full min-h-[300px] border-2 border-dashed border-gray-400 dark:border-gray-600 rounded-lg p-4">
+          {
+            vendas
+          }
           <GraficoBarra 
             labels={["X-tudo", "X-salada", "X-bacon"]}
             valores={[10,11,4]}
