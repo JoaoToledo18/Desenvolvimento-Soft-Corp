@@ -18,3 +18,10 @@
 
 ### 26/10
 #### **João e Pedro**
+- inclusão da biblioteca chart.js
+- teste de views
+- menu componente
+- componente grafico de barra
+- banco de dados no repositorio
+- criação de views
+- inicio do desenvolvimento do dashboard
