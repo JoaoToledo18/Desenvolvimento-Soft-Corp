@@ -89,7 +89,7 @@ const DashboardLayout = () => {
               <ul className="list-disc pl-5 space-y-1 mb-4">
                 {vendas.map((item, index) => (
                   <li key={index}>
-                    {item.produto} — {item.totalVendida} vendas
+                    {item.Produto} — {item.Total} vendas
                   </li>
                 ))}
               </ul>

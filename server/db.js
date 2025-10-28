@@ -2,6 +2,7 @@ import mysql from "mysql2/promise";
 
 const HOST = "mysql-1d9027ca-joaotoledo-bd.e.aivencloud.com";
 const DATABASE = "siscorp";
+const PORT = 13231
 
 let lastCredentials = null;
 
@@ -11,12 +12,12 @@ export async function conn({ user, password }) {
       host: HOST,
       user,
       password,
-      port: 13231,
+      port: PORT,
       database: DATABASE,
     });
 
     await connection.ping();
-    lastCredentials = { user, password };
+    lastCredentials = { user, password};
     await connection.end();
 
     return { success: true };
@@ -38,6 +39,7 @@ export async function getConnection() {
     host: HOST,
     user: creds.user,
     password: creds.password,
+    port: PORT,
     database: DATABASE,
   });
 }
