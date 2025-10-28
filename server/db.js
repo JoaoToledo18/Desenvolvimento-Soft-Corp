@@ -1,6 +1,6 @@
 import mysql from "mysql2/promise";
 
-const HOST = "localhost";
+const HOST = "mysql-1d9027ca-joaotoledo-bd.e.aivencloud.com";
 const DATABASE = "siscorp";
 
 let lastCredentials = null;
@@ -11,6 +11,7 @@ export async function conn({ user, password }) {
       host: HOST,
       user,
       password,
+      port: 13231,
       database: DATABASE,
     });
 
