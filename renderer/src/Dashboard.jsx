@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Header from "./components/Header";
-import GraficoBarra from "./components/ChartBar"; // importa o gráfico
+import GraficoBarra from "./components/ChartBar"; 
 
 const DashboardLayout = () => {
   const [tabelas, setTabelas] = useState([]);
@@ -39,30 +39,43 @@ const DashboardLayout = () => {
 
   useEffect(() => {
     document.body.className = temaEscuro
-      ? "bg-gray-900 text-white"
-      : "bg-gray-100 text-black";
+      ? "bg-[#2c1a09] text-yellow-300" 
+      : "bg-gradient-to-b from-yellow-50 via-orange-100 to-red-100 text-black";
   }, [temaEscuro]);
 
   const alternarTema = () => setTemaEscuro(!temaEscuro);
   const logout = () => {};
 
-  // Preparar dados para o gráfico
-  const labels = vendas.map((item) => item.produto);
-  const valores = vendas.map((item) => item.totalVendida);
+  const labels = vendas.map((item) => item.Produto);
+  const valores = vendas.map((item) => item.Total);
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <Header temaEscuro={temaEscuro} alternarTema={alternarTema} logout={logout} />
+    <div className="flex flex-col min-h-screen transition-colors duration-300">
+      <Header
+        temaEscuro={temaEscuro}
+        alternarTema={alternarTema}
+        logout={logout}
+      />
 
-      <nav className="flex overflow-x-auto gap-2 p-2 bg-gray-300 dark:bg-gray-700">
+      <nav
+        className={`flex overflow-x-auto gap-2 p-2 transition-colors duration-300 ${
+          temaEscuro
+            ? "bg-[#3b240f] text-yellow-200"
+            : "bg-gradient-to-r from-yellow-400 to-red-500 text-white"
+        }`}
+      >
         {tabelas.map((tabela) => (
           <button
             key={tabela}
             onClick={() => setSelecionado(tabela)}
-            className={`flex-shrink-0 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+            className={`flex-shrink-0 px-4 py-2 rounded font-semibold transition-all duration-200 ${
               selecionado === tabela
-                ? "bg-blue-600 text-white dark:bg-blue-500"
-                : "bg-gray-200 text-black dark:bg-gray-800 dark:text-white"
+                ? temaEscuro
+                  ? "bg-yellow-500 text-black shadow-md"
+                  : "bg-red-700 text-white shadow-md"
+                : temaEscuro
+                  ? "bg-[#5a3515] text-yellow-200 hover:bg-[#70421c]"
+                  : "bg-yellow-200 text-red-800 hover:bg-yellow-300"
             }`}
             aria-current={selecionado === tabela ? "page" : undefined}
           >
@@ -71,38 +84,39 @@ const DashboardLayout = () => {
         ))}
       </nav>
 
-      <main className="flex-1 p-4">
+      <main className="flex-1 p-6">
         {selecionado ? (
-          <h2 className="text-xl font-semibold mb-4">
-            Conteúdo da tabela: {selecionado}
+          <h2 className="text-2xl font-bold mb-4 text-center">
+            Tabela: {selecionado}
           </h2>
         ) : (
-          <h2 className="text-xl font-semibold mb-4">Selecione uma tabela</h2>
+          <h2 className="text-2xl font-bold mb-4 text-center">
+            Selecione uma tabela
+          </h2>
         )}
 
-        <div className="w-full min-h-[300px] border-2 border-dashed border-gray-400 dark:border-gray-600 rounded-lg p-4">
-          <h3 className="text-lg font-semibold mb-2">Top Vendas</h3>
+        <div
+          className={`w-full min-h-[300px] border-2 rounded-lg p-4 shadow-md transition-colors duration-300 ${
+            temaEscuro
+              ? "border-yellow-600 bg-[#3b240f]"
+              : "border-red-400 bg-yellow-50"
+          }`}
+        >
+          <h3 className="text-lg font-semibold mb-2 text-center text-red-700 dark:text-yellow-300">
+            Top Vendas
+          </h3>
+
           {carregandoVendas ? (
-            <p>Carregando maiores vendas...</p>
+            <p className="text-center">Carregando maiores vendas...</p>
           ) : vendas.length > 0 ? (
-            <>
-              <ul className="list-disc pl-5 space-y-1 mb-4">
-                {vendas.map((item, index) => (
-                  <li key={index}>
-                    {item.Produto} — {item.Total} vendas
-                  </li>
-                ))}
-              </ul>
-              {/* Gráfico de barras */}
-              <GraficoBarra
-                labels={labels}
-                valores={valores}
-                titulo="Top Vendas"
-                nomeDataset="Quantidade Vendida"
-              />
-            </>
+            <GraficoBarra
+              labels={labels}
+              valores={valores}
+              titulo="Top Vendas"
+              nomeDataset="Quantidade Vendida"
+            />
           ) : (
-            <p>Nenhuma venda encontrada.</p>
+            <p className="text-center">Nenhuma venda encontrada.</p>
           )}
         </div>
       </main>
