@@ -9,17 +9,14 @@ import {
   deleteProduto 
 } from "../models/Produtos.js";
 
-// 🔹 Login
 ipcMain.handle("login", async (event, { usuario, senha }) => {
   return await login({ user: usuario, password: senha });
 });
 
-// 🔹 Permissões
 ipcMain.handle("get-permissions", async () => {
   return await getUserTables();
 });
 
-// 🔹 Maiores vendas
 ipcMain.handle("get-MaioresVendas", async () => {
   return await getMaioresVendas();
 });
