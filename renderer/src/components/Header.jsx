@@ -1,16 +1,16 @@
 import React from "react";
-import logo from "../images/logo reansparente.png"; // ajuste o caminho conforme onde salvar a imagem
+import logo from "../images/logo reansparente.png";
 
 const Header = ({ temaEscuro, alternarTema, logout }) => {
   return (
     <header
       className={`flex flex-col md:flex-row items-center justify-between p-4 transition-colors duration-300 ${
         temaEscuro
-          ? "bg-[#2c1a09] text-yellow-300" // marrom escuro e dourado
-          : "bg-gradient-to-r from-yellow-400 to-red-500 text-white" // degradê inspirado na coroa e banners
+          ? "bg-[#2c1a09] text-yellow-300" 
+          : "bg-gradient-to-r from-yellow-400 to-red-500 text-white" 
       }`}
     >
-      {/* LOGO */}
+
       <div className="flex items-center gap-3 mb-2 md:mb-0">
         <img
           src={logo}
@@ -22,7 +22,6 @@ const Header = ({ temaEscuro, alternarTema, logout }) => {
         </span>
       </div>
 
-      {/* BOTÕES */}
       <div className="flex gap-3 items-center">
         <button
           onClick={alternarTema}

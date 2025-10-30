@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Header from "./components/Header";
-import GraficoBarra from "./components/ChartBar"; 
+import Menu from "./components/Menu";
+import GraficoBarra from "./components/ChartBar";
+import Produtos from "./components/Produtos";
 
 const DashboardLayout = () => {
   const [tabelas, setTabelas] = useState([]);
@@ -8,13 +10,29 @@ const DashboardLayout = () => {
   const [temaEscuro, setTemaEscuro] = useState(false);
   const [vendas, setVendas] = useState([]);
   const [carregandoVendas, setCarregandoVendas] = useState(false);
+  const [mostrarDashboard, setMostrarDashboard] = useState(true);
+
+  const mapearTabelas = (tables) => {
+    const mapa = [];
+
+    if (tables.includes("vendas")) mapa.push("Pedidos");
+    if (tables.includes("usuarios")) mapa.push("Funcionários");
+    if (tables.includes("produtos")) mapa.push("Produtos");
+    if (tables.includes("entradasestoque")) mapa.push("Estoque");
+    if (tables.includes("log_auditoria")) mapa.push("Histórico");
+
+    return mapa;
+  };
 
   useEffect(() => {
     const fetchTabelas = async () => {
       const resposta = await window.ipc.getPermissions();
-      if (resposta.success) {
-        setTabelas(resposta.tables);
-        setSelecionado(resposta.tables[0]);
+      if (resposta.success && Array.isArray(resposta.tables)) {
+        const tabelasFiltradas = mapearTabelas(resposta.tables);
+        setTabelas(tabelasFiltradas);
+        if (tabelasFiltradas.length > 0) {
+          setSelecionado(null); 
+        }
       }
     };
     fetchTabelas();
@@ -39,7 +57,7 @@ const DashboardLayout = () => {
 
   useEffect(() => {
     document.body.className = temaEscuro
-      ? "bg-[#2c1a09] text-yellow-300" 
+      ? "bg-[#2c1a09] text-yellow-300"
       : "bg-gradient-to-b from-yellow-50 via-orange-100 to-red-100 text-black";
   }, [temaEscuro]);
 
@@ -49,6 +67,11 @@ const DashboardLayout = () => {
   const labels = vendas.map((item) => item.Produto);
   const valores = vendas.map((item) => item.Total);
 
+  const handleSelecionar = (item) => {
+    setSelecionado(item);
+    setMostrarDashboard(false);
+  };
+
   return (
     <div className="flex flex-col min-h-screen transition-colors duration-300">
       <Header
@@ -57,68 +80,62 @@ const DashboardLayout = () => {
         logout={logout}
       />
 
-      <nav
-        className={`flex overflow-x-auto gap-2 p-2 transition-colors duration-300 ${
-          temaEscuro
-            ? "bg-[#3b240f] text-yellow-200"
-            : "bg-gradient-to-r from-yellow-400 to-red-500 text-white"
-        }`}
-      >
-        {tabelas.map((tabela) => (
-          <button
-            key={tabela}
-            onClick={() => setSelecionado(tabela)}
-            className={`flex-shrink-0 px-4 py-2 rounded font-semibold transition-all duration-200 ${
-              selecionado === tabela
-                ? temaEscuro
-                  ? "bg-yellow-500 text-black shadow-md"
-                  : "bg-red-700 text-white shadow-md"
-                : temaEscuro
-                  ? "bg-[#5a3515] text-yellow-200 hover:bg-[#70421c]"
-                  : "bg-yellow-200 text-red-800 hover:bg-yellow-300"
-            }`}
-            aria-current={selecionado === tabela ? "page" : undefined}
-          >
-            {tabela}
-          </button>
-        ))}
-      </nav>
+      <Menu
+        tabelas={tabelas}
+        selecionado={selecionado}
+        setSelecionado={handleSelecionar}
+        temaEscuro={temaEscuro}
+      />
 
       <main className="flex-1 p-6">
-        {selecionado ? (
-          <h2 className="text-2xl font-bold mb-4 text-center">
-            Tabela: {selecionado}
-          </h2>
+        {mostrarDashboard ? (
+          <>
+            <h2 className="text-2xl font-bold mb-4 text-center">
+              Dashboard Principal
+            </h2>
+
+            <div
+              className={`w-full min-h-[300px] border-2 rounded-lg p-4 shadow-md transition-colors duration-300 ${
+                temaEscuro
+                  ? "border-yellow-600 bg-[#3b240f]"
+                  : "border-red-400 bg-yellow-50"
+              }`}
+            >
+              <h3 className="text-lg font-semibold mb-2 text-center text-red-700 dark:text-yellow-300">
+                Top Vendas
+              </h3>
+
+              {carregandoVendas ? (
+                <p className="text-center">Carregando maiores vendas...</p>
+              ) : vendas.length > 0 ? (
+                <GraficoBarra
+                  labels={labels}
+                  valores={valores}
+                  titulo="Top Vendas"
+                  nomeDataset="Quantidade Vendida"
+                />
+              ) : (
+                <p className="text-center">Nenhuma venda encontrada.</p>
+              )}
+            </div>
+          </>
         ) : (
-          <h2 className="text-2xl font-bold mb-4 text-center">
-            Selecione uma tabela
-          </h2>
+          <>
+            {selecionado === "Produtos" ? (
+              <Produtos temaEscuro={temaEscuro} />
+            ) : (
+              <div
+                className={`w-full min-h-[400px] flex items-center justify-center rounded-lg border-2 p-6 text-xl font-semibold transition-colors duration-300 ${
+                  temaEscuro
+                    ? "border-yellow-600 bg-[#3b240f] text-yellow-200"
+                    : "border-red-400 bg-yellow-50 text-red-700"
+                }`}
+              >
+                <p>Módulo selecionado: {selecionado}</p>
+              </div>
+            )}
+          </>
         )}
-
-        <div
-          className={`w-full min-h-[300px] border-2 rounded-lg p-4 shadow-md transition-colors duration-300 ${
-            temaEscuro
-              ? "border-yellow-600 bg-[#3b240f]"
-              : "border-red-400 bg-yellow-50"
-          }`}
-        >
-          <h3 className="text-lg font-semibold mb-2 text-center text-red-700 dark:text-yellow-300">
-            Top Vendas
-          </h3>
-
-          {carregandoVendas ? (
-            <p className="text-center">Carregando maiores vendas...</p>
-          ) : vendas.length > 0 ? (
-            <GraficoBarra
-              labels={labels}
-              valores={valores}
-              titulo="Top Vendas"
-              nomeDataset="Quantidade Vendida"
-            />
-          ) : (
-            <p className="text-center">Nenhuma venda encontrada.</p>
-          )}
-        </div>
       </main>
     </div>
   );
