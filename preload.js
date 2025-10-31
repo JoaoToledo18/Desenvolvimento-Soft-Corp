@@ -30,4 +30,23 @@ contextBridge.exposeInMainWorld("ipc", {
   deleteProduto: async (idProduto) => {
     return await ipcRenderer.invoke("delete-produto", idProduto)
   },
+
+  getFuncionarios: async () => {
+    ipcRenderer.invoke("get-funcionarios")
+  },
+
+  createFuncionario: async (nome, login, senha) => {
+    ipcRenderer.invoke("create-funcionario", nome, login, senha)
+  },
+
+  updateFuncionario: async (nome, login, senha, idFuncionario) => {
+    ipcRenderer.invoke("update-funcionario", nome, login, senha, idFuncionario)
+  },
+  deleteFuncionario: async (idFuncionario) => {
+    ipcRenderer.invoke("delete-funcionario", idFuncionario)
+  },
+
+  getFuncoes: async () =>{
+    ipcRenderer.invoke("get-funcoes")
+},
 });
