@@ -3,6 +3,7 @@ import Header from "./components/Header";
 import Menu from "./components/Menu";
 import GraficoBarra from "./components/ChartBar";
 import Produtos from "./components/Produtos";
+import Funcionarios from "./components/Funcionarios";
 
 const DashboardLayout = () => {
   const [tabelas, setTabelas] = useState([]);
@@ -121,21 +122,28 @@ const DashboardLayout = () => {
           </>
         ) : (
           <>
-            {selecionado === "Produtos" ? (
+            {selecionado === "Produtos" && (
               <Produtos temaEscuro={temaEscuro} />
-            ) : (
-              <div
-                className={`w-full min-h-[400px] flex items-center justify-center rounded-lg border-2 p-6 text-xl font-semibold transition-colors duration-300 ${
-                  temaEscuro
-                    ? "border-yellow-600 bg-[#3b240f] text-yellow-200"
-                    : "border-red-400 bg-yellow-50 text-red-700"
-                }`}
-              >
-                <p>Módulo selecionado: {selecionado}</p>
-              </div>
             )}
-          </>
-        )}
+
+            {selecionado === "Funcionários" && (
+              <Funcionarios temaEscuro={temaEscuro} />
+            )}      
+        
+            {!["Produtos", "Funcionários"].includes(selecionado) && (
+        <div
+          className={`w-full min-h-[400px] flex items-center justify-center rounded-lg border-2 p-6 text-xl font-semibold transition-colors duration-300 ${
+            temaEscuro
+              ? "border-yellow-600 bg-[#3b240f] text-yellow-200"
+              : "border-red-400 bg-yellow-50 text-red-700"
+          }`}
+        >
+          <p>Módulo selecionado: {selecionado}</p>
+        </div>
+      )}
+    </>
+  )}
+
       </main>
     </div>
   );

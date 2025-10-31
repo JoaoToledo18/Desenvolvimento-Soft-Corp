@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 
 const Funcionarios = ({ temaEscuro }) => {
-  const [funcionarios, setFuncionarios] = useState([]);
-  const [funcoes, setFuncoes] = useState([]); // lista de funções (adm, gerente, etc)
+  const [usuarios, setUsuarios] = useState([]);
+  const [funcoes, setFuncoes] = useState([]);
   const [modoCriar, setModoCriar] = useState(false);
   const [novoFuncionario, setNovoFuncionario] = useState({
     nome: "",
@@ -12,14 +12,15 @@ const Funcionarios = ({ temaEscuro }) => {
   });
   const [carregando, setCarregando] = useState(false);
 
+  // 🔹 Busca todos os funcionários
   const buscarFuncionarios = async () => {
     setCarregando(true);
     try {
       const resposta = await window.ipc.getFuncionarios();
-      if (resposta.success && Array.isArray(resposta.funcionarios)) {
-        setFuncionarios(resposta.funcionarios);
+      if (resposta?.success && Array.isArray(resposta.funcionarios)) {
+        setUsuarios(resposta.funcionarios);
       } else {
-        setFuncionarios([]);
+        setUsuarios([]);
       }
     } catch (err) {
       console.error("Erro ao buscar funcionários:", err);
@@ -28,11 +29,11 @@ const Funcionarios = ({ temaEscuro }) => {
     }
   };
 
-
+  // 🔹 Busca todas as funções
   const buscarFuncoes = async () => {
     try {
       const resposta = await window.ipc.getFuncoes();
-      if (resposta.success && Array.isArray(resposta.funcoes)) {
+      if (resposta?.success && Array.isArray(resposta.funcoes)) {
         setFuncoes(resposta.funcoes);
       } else {
         setFuncoes([]);
@@ -47,6 +48,7 @@ const Funcionarios = ({ temaEscuro }) => {
     buscarFuncoes();
   }, []);
 
+  // 🔹 Criação de funcionário
   const criarFuncionario = async (e) => {
     e.preventDefault();
     const { nome, login, senha, idFuncao } = novoFuncionario;
@@ -64,30 +66,35 @@ const Funcionarios = ({ temaEscuro }) => {
     });
 
     if (resposta.success) {
+      alert("Funcionário criado com sucesso!");
       setModoCriar(false);
       setNovoFuncionario({ nome: "", login: "", senha: "", idFuncao: "" });
       buscarFuncionarios();
     } else {
-      alert("Erro ao criar funcionário");
+      alert(resposta.message || "Erro ao criar funcionário");
     }
   };
 
+  // 🔹 Atualização de funcionário
   const atualizarFuncionario = async (funcionario) => {
     const resposta = await window.ipc.updateFuncionario(funcionario);
     if (resposta.success) {
+      alert("Funcionário atualizado!");
       buscarFuncionarios();
     } else {
-      alert("Erro ao atualizar funcionário");
+      alert(resposta.message || "Erro ao atualizar funcionário");
     }
   };
 
-  const excluirFuncionario = async (idFuncionario) => {
+  // 🔹 Exclusão de funcionário
+  const excluirFuncionario = async (idUsuario) => {
     if (!confirm("Tem certeza que deseja excluir este funcionário?")) return;
-    const resposta = await window.ipc.deleteFuncionario(idFuncionario);
+    const resposta = await window.ipc.deleteFuncionario(idUsuario);
     if (resposta.success) {
-      setFuncionarios(funcionarios.filter((f) => f.idFuncionario !== idFuncionario));
+      alert("Funcionário excluído!");
+      setUsuarios((prev) => prev.filter((u) => u.idUsuario !== idUsuario));
     } else {
-      alert("Erro ao excluir funcionário");
+      alert(resposta.message || "Erro ao excluir funcionário");
     }
   };
 
@@ -101,7 +108,7 @@ const Funcionarios = ({ temaEscuro }) => {
         Gerenciamento de Funcionários
       </h2>
 
-      {/* Botões de alternância */}
+      {/* 🔹 Botões de alternância */}
       <div className="flex justify-center gap-4 mb-6">
         <button
           onClick={() => setModoCriar(false)}
@@ -125,6 +132,7 @@ const Funcionarios = ({ temaEscuro }) => {
         </button>
       </div>
 
+      {/* 🔹 Modo de criação */}
       {modoCriar ? (
         <form
           onSubmit={criarFuncionario}
@@ -167,7 +175,7 @@ const Funcionarios = ({ temaEscuro }) => {
             <option value="">Selecione a função</option>
             {funcoes.map((f) => (
               <option key={f.idFuncao} value={f.idFuncao}>
-                {f.nomeFuncao}
+                {f.nome}
               </option>
             ))}
           </select>
@@ -180,14 +188,15 @@ const Funcionarios = ({ temaEscuro }) => {
           </button>
         </form>
       ) : (
+        // 🔹 Modo de visualização/edição
         <>
           {carregando ? (
             <p className="text-center">Carregando funcionários...</p>
-          ) : funcionarios.length > 0 ? (
+          ) : usuarios.length > 0 ? (
             <div className="flex flex-col gap-4">
-              {funcionarios.map((f) => (
+              {usuarios.map((u) => (
                 <div
-                  key={f.idFuncionario}
+                  key={u.idUsuario}
                   className={`flex flex-wrap items-center gap-2 border rounded p-2 ${
                     temaEscuro
                       ? "border-yellow-600 bg-[#5a3515]"
@@ -196,17 +205,17 @@ const Funcionarios = ({ temaEscuro }) => {
                 >
                   <input
                     type="text"
-                    value={f.idFuncionario}
+                    value={u.idUsuario}
                     disabled
                     className="w-16 p-1 border rounded bg-gray-200 text-center"
                   />
                   <input
                     type="text"
-                    value={f.nome}
+                    value={u.nome}
                     onChange={(e) =>
-                      setFuncionarios((prev) =>
+                      setUsuarios((prev) =>
                         prev.map((item) =>
-                          item.idFuncionario === f.idFuncionario
+                          item.idUsuario === u.idUsuario
                             ? { ...item, nome: e.target.value }
                             : item
                         )
@@ -216,11 +225,11 @@ const Funcionarios = ({ temaEscuro }) => {
                   />
                   <input
                     type="text"
-                    value={f.login}
+                    value={u.login}
                     onChange={(e) =>
-                      setFuncionarios((prev) =>
+                      setUsuarios((prev) =>
                         prev.map((item) =>
-                          item.idFuncionario === f.idFuncionario
+                          item.idUsuario === u.idUsuario
                             ? { ...item, login: e.target.value }
                             : item
                         )
@@ -229,33 +238,33 @@ const Funcionarios = ({ temaEscuro }) => {
                     className="flex-1 p-1 border rounded"
                   />
                   <select
-                    value={f.idFuncao}
+                    value={u.idfuncoes}
                     onChange={(e) =>
-                      setFuncionarios((prev) =>
+                      setUsuarios((prev) =>
                         prev.map((item) =>
-                          item.idFuncionario === f.idFuncionario
-                            ? { ...item, idFuncao: e.target.value }
+                          item.idUsuario === u.idUsuario
+                            ? { ...item, idfuncoes: e.target.value }
                             : item
                         )
                       )
                     }
                     className="p-1 border rounded"
                   >
-                    {funcoes.map((func) => (
-                      <option key={func.idFuncao} value={func.idFuncao}>
-                        {func.nomeFuncao}
+                    {funcoes.map((f) => (
+                      <option key={f.idFuncao} value={f.idFuncao}>
+                        {f.nome}
                       </option>
                     ))}
                   </select>
 
                   <button
-                    onClick={() => atualizarFuncionario(f)}
+                    onClick={() => atualizarFuncionario(u)}
                     className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
                   >
                     Atualizar
                   </button>
                   <button
-                    onClick={() => excluirFuncionario(f.idFuncionario)}
+                    onClick={() => excluirFuncionario(u.idUsuario)}
                     className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
                   >
                     Excluir

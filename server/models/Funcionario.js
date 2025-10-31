@@ -1,17 +1,28 @@
 import { getConnection } from "../db.js";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
-    //Busca todos os funcionarios
+export async function getFuncoes() {
+  try {
+    const connection = await getConnection();
+    const [rows] = await connection.query("SELECT nome FROM funcoes");
+    console.log(rows)
+    await connection.end();
+    return { success: true, funcoes: rows };
+  } catch (err) {
+    console.error("Erro ao buscar funcao:", err.message);
+    return { success: false, message: "Erro ao buscar funcao." };
+  }
+}
+
+// Busca todos os funcionários
 export async function getAllFuncionarios() {
   try {
     const connection = await getConnection();
-
-    const [rows] = await connection.query(
-      `SELECT f.idFuncionario, f.nome, f.login, fun.nomeFuncao
-       FROM funcionarios f
-       JOIN funcoes fun ON fun.idFuncao = f.idFuncao`
-    );
-
+    const [rows] = await connection.query(`
+      SELECT u.idUsuario, u.nome, u.login, fun.nome AS nomeFuncao
+      FROM usuarios u
+      JOIN funcoes fun ON fun.idFuncao = u.idFuncoes
+    `);
     await connection.end();
     return { success: true, funcionarios: rows };
   } catch (err) {
@@ -23,38 +34,36 @@ export async function getAllFuncionarios() {
 export async function createFuncionario({ nome, login, senha, idFuncao }) {
   const connection = await getConnection();
   try {
-        //Busca os privilégios da função
+    // Busca os privilégios da função
     const [funcoes] = await connection.query(
-      "SELECT privilegios FROM funcoes WHERE idFuncao = ?",
+      "SELECT privilegios FROM funcoes WHERE idfuncao = ?",
       [idFuncao]
     );
+
+    console.log(nome)
 
     if (funcoes.length === 0) {
       throw new Error("Função não encontrada.");
     }
 
-    const privilegios = funcoes[0].privilegios; 
-
+    const privilegios = funcoes[0].privilegios;
     const senhaHash = await bcrypt.hash(senha, 10);
 
-    //Escapa identificadores para evitar injeção
+    // Escapa identificadores
     const usuarioMysql = connection.escapeId(login);
     const senhaMysql = connection.escape(senha);
 
     await connection.query(
       `CREATE USER IF NOT EXISTS ${usuarioMysql}@'%' IDENTIFIED BY ${senhaMysql}`
     );
-
-    //Aplica as permissões com base na função
     await connection.query(
-      `GRANT ${privilegios} ON seu_banco_de_dados.* TO ${usuarioMysql}@'%'`
+      `GRANT ${privilegios} ON siscorp.* TO ${usuarioMysql}@'%'`
     );
-
     await connection.query("FLUSH PRIVILEGES");
 
-    //Registra o funcionário na tabela 
+    // Insere funcionário
     const [result] = await connection.query(
-      "INSERT INTO funcionarios (nome, login, senha, idFuncao) VALUES (?, ?, ?, ?)",
+      "INSERT INTO usuarios (nome, login, senha, idFuncoes) VALUES (?, ?, ?, ?)",
       [nome, login, senhaHash, idFuncao]
     );
 
@@ -67,18 +76,18 @@ export async function createFuncionario({ nome, login, senha, idFuncao }) {
   }
 }
 
-export async function updateFuncionario({ idFuncionario, nome, login, senha, idFuncao }) {
+export async function updateFuncionario({ idUsuario, nome, login, senha, idFuncao }) {
   const connection = await getConnection();
   try {
     let query, params;
 
     if (senha) {
       const senhaHash = await bcrypt.hash(senha, 10);
-      query = "UPDATE funcionarios SET nome = ?, login = ?, senha = ?, idFuncao = ? WHERE idFuncionario = ?";
-      params = [nome, login, senhaHash, idFuncao, idFuncionario];
+      query = "UPDATE usuarios SET nome = ?, login = ?, senha = ?, idFuncoes = ? WHERE idUsuario = ?";
+      params = [nome, login, senhaHash, idFuncao, idUsuario];
     } else {
-      query = "UPDATE funcionarios SET nome = ?, login = ?, idFuncao = ? WHERE idFuncionario = ?";
-      params = [nome, login, idFuncao, idFuncionario];
+      query = "UPDATE usuarios SET nome = ?, login = ?, idFuncoes = ? WHERE idUsuario = ?";
+      params = [nome, login, idFuncao, idUsuario];
     }
 
     const [result] = await connection.query(query, params);
@@ -92,34 +101,24 @@ export async function updateFuncionario({ idFuncionario, nome, login, senha, idF
   }
 }
 
-
- //Exclui um funcionário e o respectivo usuário MySQL.
-
-export async function deleteFuncionario(idFuncionario) {
+export async function deleteFuncionario(idUsuario) {
   const connection = await getConnection();
   try {
-    //Busca o login do funcionário antes de excluir
     const [rows] = await connection.query(
-      "SELECT login FROM funcionarios WHERE idFuncionario = ?",
-      [idFuncionario]
+      "SELECT login FROM usuarios WHERE idUsuario = ?",
+      [idUsuario]
     );
 
-    if (rows.length === 0) {
-      throw new Error("Funcionário não encontrado.");
-    }
+    if (rows.length === 0) throw new Error("Funcionário não encontrado.");
 
     const login = rows[0].login;
     const usuarioMysql = connection.escapeId(login);
 
-    //Remove o usuário do MySQL
     await connection.query(`DROP USER IF EXISTS ${usuarioMysql}@'%'`);
-
-    //Remove o funcionário da tabela
     const [result] = await connection.query(
-      "DELETE FROM funcionarios WHERE idFuncionario = ?",
-      [idFuncionario]
+      "DELETE FROM usuarios WHERE idUsuario = ?",
+      [idUsuario]
     );
-
     await connection.query("FLUSH PRIVILEGES");
     await connection.end();
 

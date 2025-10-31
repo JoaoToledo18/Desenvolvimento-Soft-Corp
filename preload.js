@@ -32,21 +32,21 @@ contextBridge.exposeInMainWorld("ipc", {
   },
 
   getFuncionarios: async () => {
-    ipcRenderer.invoke("get-funcionarios")
+    return await ipcRenderer.invoke("get-funcionarios")
   },
 
-  createFuncionario: async (nome, login, senha) => {
-    ipcRenderer.invoke("create-funcionario", nome, login, senha)
+  createFuncionario: async (nome, login, senha, idFuncoes) => {
+    return await ipcRenderer.invoke("create-funcionario", nome, login, senha, idFuncoes)
   },
 
   updateFuncionario: async (nome, login, senha, idFuncionario) => {
-    ipcRenderer.invoke("update-funcionario", nome, login, senha, idFuncionario)
+   return await  ipcRenderer.invoke("update-funcionario", nome, login, senha, idFuncionario)
   },
   deleteFuncionario: async (idFuncionario) => {
-    ipcRenderer.invoke("delete-funcionario", idFuncionario)
+    return await ipcRenderer.invoke("delete-funcionario", idFuncionario)
   },
 
   getFuncoes: async () =>{
-    ipcRenderer.invoke("get-funcoes")
+    return await ipcRenderer.invoke("get-funcoes")
 },
 });
