@@ -3,8 +3,7 @@ import { contextBridge, ipcRenderer } from "electron";
 contextBridge.exposeInMainWorld("ipc", {
 
   login: async (usuario, senha) => {
-    const resposta = await ipcRenderer.invoke("login", { usuario, senha });
-    return resposta;
+    return await ipcRenderer.invoke("login", { usuario, senha });
   },
 
   getPermissions: async () => {
@@ -16,37 +15,51 @@ contextBridge.exposeInMainWorld("ipc", {
   },
 
   getProdutos: async () => {
-    return await ipcRenderer.invoke("get-produtos")
+    return await ipcRenderer.invoke("get-produtos");
   },
 
   createProduto: async (nome, categoria, preco) => {
-    return await ipcRenderer.invoke("create-produto", { nome, categoria, preco })
+    return await ipcRenderer.invoke("create-produto", { nome, categoria, preco });
   },
-    
+
   updateProduto: async (produto) => {
-    return await ipcRenderer.invoke("update-produto", produto)
+    return await ipcRenderer.invoke("update-produto", produto);
   },
 
   deleteProduto: async (idProduto) => {
-    return await ipcRenderer.invoke("delete-produto", idProduto)
+    return await ipcRenderer.invoke("delete-produto", idProduto);
   },
 
-  getFuncionarios: async () => {
-    return await ipcRenderer.invoke("get-funcionarios")
+  getUsuarios: async () => {
+    return await ipcRenderer.invoke("get-usuarios");
   },
 
-  createFuncionario: async (nome, login, senha, idFuncoes) => {
-    return await ipcRenderer.invoke("create-funcionario", nome, login, senha, idFuncoes)
+  createUsuario: async ({ nome, login, senha, idFuncao }) => {
+    return await ipcRenderer.invoke("create-usuario", { nome, login, senha, idFuncao });
   },
 
-  updateFuncionario: async (nome, login, senha, idFuncionario) => {
-   return await  ipcRenderer.invoke("update-funcionario", nome, login, senha, idFuncionario)
-  },
-  deleteFuncionario: async (idFuncionario) => {
-    return await ipcRenderer.invoke("delete-funcionario", idFuncionario)
+  updateUsuario: async (usuario) => {
+    return await ipcRenderer.invoke("update-usuario", usuario);
   },
 
-  getFuncoes: async () =>{
-    return await ipcRenderer.invoke("get-funcoes")
-},
+  deleteUsuario: async (idUsuario) => {
+    return await ipcRenderer.invoke("delete-usuario", idUsuario);
+  },
+
+  getFuncoes: async () => {
+    return await ipcRenderer.invoke("get-funcoes");
+  },
+
+  createFuncao: async (nome, privilegios) => {
+    return await ipcRenderer.invoke("create-funcao", { nome, privilegios });
+  },
+
+  updateFuncao: async (funcao) => {
+    return await ipcRenderer.invoke("update-funcao", funcao);
+  },
+
+  deleteFuncao: async (idFuncao) => {
+    return await ipcRenderer.invoke("delete-funcao", idFuncao);
+  },
+
 });

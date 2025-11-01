@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 
-const Funcionarios = ({ temaEscuro }) => {
+const Usuarios = ({ temaEscuro }) => {
   const [usuarios, setUsuarios] = useState([]);
   const [funcoes, setFuncoes] = useState([]);
   const [modoCriar, setModoCriar] = useState(false);
-  const [novoFuncionario, setNovoFuncionario] = useState({
+  const [novoUsuario, setNovoUsuario] = useState({
     nome: "",
     login: "",
     senha: "",
@@ -12,24 +12,22 @@ const Funcionarios = ({ temaEscuro }) => {
   });
   const [carregando, setCarregando] = useState(false);
 
-  // 🔹 Busca todos os funcionários
-  const buscarFuncionarios = async () => {
+  const buscarUsuarios = async () => {
     setCarregando(true);
     try {
-      const resposta = await window.ipc.getFuncionarios();
-      if (resposta?.success && Array.isArray(resposta.funcionarios)) {
-        setUsuarios(resposta.funcionarios);
+      const resposta = await window.ipc.getUsuarios();
+      if (resposta?.success && Array.isArray(resposta.usuarios)) {
+        setUsuarios(resposta.usuarios);
       } else {
         setUsuarios([]);
       }
     } catch (err) {
-      console.error("Erro ao buscar funcionários:", err);
+      console.error("Erro ao buscar usuários:", err);
     } finally {
       setCarregando(false);
     }
   };
 
-  // 🔹 Busca todas as funções
   const buscarFuncoes = async () => {
     try {
       const resposta = await window.ipc.getFuncoes();
@@ -44,21 +42,20 @@ const Funcionarios = ({ temaEscuro }) => {
   };
 
   useEffect(() => {
-    buscarFuncionarios();
+    buscarUsuarios();
     buscarFuncoes();
   }, []);
 
-  // 🔹 Criação de funcionário
-  const criarFuncionario = async (e) => {
+  const criarUsuario = async (e) => {
     e.preventDefault();
-    const { nome, login, senha, idFuncao } = novoFuncionario;
+    const { nome, login, senha, idFuncao } = novoUsuario;
 
     if (!nome || !login || !senha || !idFuncao) {
       alert("Preencha todos os campos!");
       return;
     }
 
-    const resposta = await window.ipc.createFuncionario({
+    const resposta = await window.ipc.createUsuario({
       nome,
       login,
       senha,
@@ -66,35 +63,33 @@ const Funcionarios = ({ temaEscuro }) => {
     });
 
     if (resposta.success) {
-      alert("Funcionário criado com sucesso!");
+      alert("Usuário criado com sucesso!");
       setModoCriar(false);
-      setNovoFuncionario({ nome: "", login: "", senha: "", idFuncao: "" });
-      buscarFuncionarios();
+      setNovoUsuario({ nome: "", login: "", senha: "", idFuncao: "" });
+      buscarUsuarios();
     } else {
-      alert(resposta.message || "Erro ao criar funcionário");
+      alert(resposta.message || "Erro ao criar usuário");
     }
   };
 
-  // 🔹 Atualização de funcionário
-  const atualizarFuncionario = async (funcionario) => {
-    const resposta = await window.ipc.updateFuncionario(funcionario);
+  const atualizarUsuario = async (usuario) => {
+    const resposta = await window.ipc.updateUsuario(usuario);
     if (resposta.success) {
-      alert("Funcionário atualizado!");
-      buscarFuncionarios();
+      alert("Usuário atualizado!");
+      buscarUsuarios();
     } else {
-      alert(resposta.message || "Erro ao atualizar funcionário");
+      alert(resposta.message || "Erro ao atualizar usuário");
     }
   };
 
-  // 🔹 Exclusão de funcionário
-  const excluirFuncionario = async (idUsuario) => {
-    if (!confirm("Tem certeza que deseja excluir este funcionário?")) return;
-    const resposta = await window.ipc.deleteFuncionario(idUsuario);
+  const excluirUsuario = async (idUsuario) => {
+    if (!confirm("Tem certeza que deseja excluir este usuário?")) return;
+    const resposta = await window.ipc.deleteUsuario(idUsuario);
     if (resposta.success) {
-      alert("Funcionário excluído!");
+      alert("Usuário excluído!");
       setUsuarios((prev) => prev.filter((u) => u.idUsuario !== idUsuario));
     } else {
-      alert(resposta.message || "Erro ao excluir funcionário");
+      alert(resposta.message || "Erro ao excluir usuário");
     }
   };
 
@@ -104,11 +99,8 @@ const Funcionarios = ({ temaEscuro }) => {
         temaEscuro ? "bg-[#3b240f] text-yellow-200" : "bg-yellow-50 text-black"
       }`}
     >
-      <h2 className="text-2xl font-bold mb-4 text-center">
-        Gerenciamento de Funcionários
-      </h2>
+      <h2 className="text-2xl font-bold mb-4 text-center">Gerenciamento de Usuários</h2>
 
-      {/* 🔹 Botões de alternância */}
       <div className="flex justify-center gap-4 mb-6">
         <button
           onClick={() => setModoCriar(false)}
@@ -132,44 +124,32 @@ const Funcionarios = ({ temaEscuro }) => {
         </button>
       </div>
 
-      {/* 🔹 Modo de criação */}
       {modoCriar ? (
-        <form
-          onSubmit={criarFuncionario}
-          className="flex flex-col gap-4 max-w-md mx-auto"
-        >
+        <form onSubmit={criarUsuario} className="flex flex-col gap-4 max-w-md mx-auto">
           <input
             type="text"
             placeholder="Nome"
-            value={novoFuncionario.nome}
-            onChange={(e) =>
-              setNovoFuncionario({ ...novoFuncionario, nome: e.target.value })
-            }
+            value={novoUsuario.nome}
+            onChange={(e) => setNovoUsuario({ ...novoUsuario, nome: e.target.value })}
             className="p-2 border rounded"
           />
           <input
             type="text"
             placeholder="Login"
-            value={novoFuncionario.login}
-            onChange={(e) =>
-              setNovoFuncionario({ ...novoFuncionario, login: e.target.value })
-            }
+            value={novoUsuario.login}
+            onChange={(e) => setNovoUsuario({ ...novoUsuario, login: e.target.value })}
             className="p-2 border rounded"
           />
           <input
             type="password"
             placeholder="Senha"
-            value={novoFuncionario.senha}
-            onChange={(e) =>
-              setNovoFuncionario({ ...novoFuncionario, senha: e.target.value })
-            }
+            value={novoUsuario.senha}
+            onChange={(e) => setNovoUsuario({ ...novoUsuario, senha: e.target.value })}
             className="p-2 border rounded"
           />
           <select
-            value={novoFuncionario.idFuncao}
-            onChange={(e) =>
-              setNovoFuncionario({ ...novoFuncionario, idFuncao: e.target.value })
-            }
+            value={novoUsuario.idFuncao}
+            onChange={(e) => setNovoUsuario({ ...novoUsuario, idFuncao: e.target.value })}
             className="p-2 border rounded"
           >
             <option value="">Selecione a função</option>
@@ -184,23 +164,20 @@ const Funcionarios = ({ temaEscuro }) => {
             type="submit"
             className="bg-green-600 text-white py-2 rounded hover:bg-green-700"
           >
-            Criar Funcionário
+            Criar Usuário
           </button>
         </form>
       ) : (
-        // 🔹 Modo de visualização/edição
         <>
           {carregando ? (
-            <p className="text-center">Carregando funcionários...</p>
+            <p className="text-center">Carregando usuários...</p>
           ) : usuarios.length > 0 ? (
             <div className="flex flex-col gap-4">
               {usuarios.map((u) => (
                 <div
                   key={u.idUsuario}
                   className={`flex flex-wrap items-center gap-2 border rounded p-2 ${
-                    temaEscuro
-                      ? "border-yellow-600 bg-[#5a3515]"
-                      : "border-red-300 bg-white"
+                    temaEscuro ? "border-yellow-600 bg-[#5a3515]" : "border-red-300 bg-white"
                   }`}
                 >
                   <input
@@ -215,9 +192,7 @@ const Funcionarios = ({ temaEscuro }) => {
                     onChange={(e) =>
                       setUsuarios((prev) =>
                         prev.map((item) =>
-                          item.idUsuario === u.idUsuario
-                            ? { ...item, nome: e.target.value }
-                            : item
+                          item.idUsuario === u.idUsuario ? { ...item, nome: e.target.value } : item
                         )
                       )
                     }
@@ -229,22 +204,18 @@ const Funcionarios = ({ temaEscuro }) => {
                     onChange={(e) =>
                       setUsuarios((prev) =>
                         prev.map((item) =>
-                          item.idUsuario === u.idUsuario
-                            ? { ...item, login: e.target.value }
-                            : item
+                          item.idUsuario === u.idUsuario ? { ...item, login: e.target.value } : item
                         )
                       )
                     }
                     className="flex-1 p-1 border rounded"
                   />
                   <select
-                    value={u.idfuncoes}
+                    value={u.idFuncao}
                     onChange={(e) =>
                       setUsuarios((prev) =>
                         prev.map((item) =>
-                          item.idUsuario === u.idUsuario
-                            ? { ...item, idfuncoes: e.target.value }
-                            : item
+                          item.idUsuario === u.idUsuario ? { ...item, idFuncao: e.target.value } : item
                         )
                       )
                     }
@@ -258,13 +229,13 @@ const Funcionarios = ({ temaEscuro }) => {
                   </select>
 
                   <button
-                    onClick={() => atualizarFuncionario(u)}
+                    onClick={() => atualizarUsuario(u)}
                     className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
                   >
                     Atualizar
                   </button>
                   <button
-                    onClick={() => excluirFuncionario(u.idUsuario)}
+                    onClick={() => excluirUsuario(u.idUsuario)}
                     className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
                   >
                     Excluir
@@ -273,7 +244,7 @@ const Funcionarios = ({ temaEscuro }) => {
               ))}
             </div>
           ) : (
-            <p className="text-center">Nenhum funcionário encontrado.</p>
+            <p className="text-center">Nenhum usuário encontrado.</p>
           )}
         </>
       )}
@@ -281,4 +252,4 @@ const Funcionarios = ({ temaEscuro }) => {
   );
 };
 
-export default Funcionarios;
+export default Usuarios;
