@@ -4,8 +4,8 @@ import backgroundImg from "../images/back.png";
 import logoImg from "../images/logo reansparente.png";
 
 const Login = ({ onLoginSucesso }) => {
-  const [usuario, setUsuario] = useState("pedro");
-  const [senha, setSenha] = useState("123");
+  const [usuario, setUsuario] = useState("");
+  const [senha, setSenha] = useState("");
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [mensagem, setMensagem] = useState("");
   const [carregando, setCarregando] = useState(false);
