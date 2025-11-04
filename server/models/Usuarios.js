@@ -30,43 +30,50 @@ export async function getAllUsuarios() {
 }
 
 // 🔹 Criar novo usuário
-export async function createUsuario({ nome, login, senha, idFuncoes }) {
+export async function createUsuario({ nome, login, senha, idFuncao }) {
   const connection = await getConnection();
 
   try {
     await connection.beginTransaction();
 
-    // 1️⃣ Cria o usuário no próprio banco de dados MySQL
-    const createUserQuery = `CREATE USER IF NOT EXISTS ?@'%' IDENTIFIED BY ?`;
-    await connection.query(createUserQuery, [login, senha]);
 
-    // 2️⃣ Atribuir permissões com base na função
-    let grantQuery = "";
-    switch (Number(idFuncoes)) {
-      case 1: // Admin
-        grantQuery = `GRANT ALL PRIVILEGES ON *.* TO ?@'%' WITH GRANT OPTION`;
-        break;
-      case 2: // Gerente
-        grantQuery = `GRANT SELECT, INSERT, UPDATE, DELETE ON *.* TO ?@'%'`;
-        break;
-      case 3: // Cozinha
-        grantQuery = `GRANT SELECT, UPDATE ON *.* TO ?@'%'`;
-        break;
-      case 4: // Garçom
-        grantQuery = `GRANT SELECT, INSERT ON *.* TO ?@'%'`;
-        break;
-      default:
-        throw new Error("Função inválida para definição de privilégios.");
+    // 1️⃣ Criptografa a senha
+    const senhaHash = await bcrypt.hash(senha, 10);
+
+    // 2️⃣ Busca os privilégios da função
+    const [funcaoRows] = await connection.query(
+      "SELECT nome, privilegios FROM funcoes WHERE idFuncao = ?",
+      [idFuncao]
+    );
+
+    if (funcaoRows.length === 0) {
+      throw new Error("Função não encontrada.");
     }
 
-    await connection.query(grantQuery, [login]);
+    const { nome: nomeFuncao, privilegios } = funcaoRows[0];
+    const usuarioMysql = connection.escapeId(login);
+    const senhaMysql = connection.escape(senha); // Usar a senha original para o MySQL
+
+    // 3️⃣ Cria o usuário no MySQL
+    await connection.query(`CREATE USER ${usuarioMysql}@'%' IDENTIFIED BY ${senhaMysql}`);
+
+    // 4️⃣ Atribui as permissões
+    if (privilegios && privilegios.trim() !== "") {
+      // O privilégio deve ser uma string como "SELECT, INSERT ON db.tabela"
+      await connection.query(`GRANT ${privilegios} ON siscorp.* TO ${usuarioMysql}@'%'`);
+    } else {
+      // Permissão básica se não houver privilégios definidos
+      await connection.query(`GRANT SELECT ON siscorp.* TO ${usuarioMysql}@'%'`);
+    }
+
+    // 5️⃣ Aplica as mudanças de privilégio
     await connection.query("FLUSH PRIVILEGES");
 
-    // 3️⃣ Agora registra o usuário na tabela de controle do sistema
+    // 6️⃣ Agora registra o usuário na tabela de controle do sistema
     const [result] = await connection.query(
       `INSERT INTO usuarios (nome, login, senha, idFuncoes)
        VALUES (?, ?, ?, ?)`,
-      [nome, login, senha, idFuncoes]
+      [nome, login, senhaHash, idFuncao]
     );
 
     await connection.commit();
