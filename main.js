@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow } from 'electron';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import './server/routers/RoutersIPC.js';
@@ -21,7 +21,7 @@ function createWindow() {
   const isDev = !app.isPackaged;
   const url = isDev
     ? 'http://localhost:5173'
-    : `file://${path.join(__dirname, 'renderer/dist/index.html')}`;
+    : `file://${path.join(__dirname, 'dist/index.html')}`;
 
   win.loadURL(url);
 }

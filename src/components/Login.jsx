@@ -97,7 +97,7 @@ const Login = ({ onLoginSucesso }) => {
           {mensagem && (
             <p
               className={`mt-2 ${
-                mensagem.includes("✅") ? "text-green-500" : "text-red-500"
+                mensagem.includes() ? "text-red-500" : "text-green-500"
               }`}
             >
               {mensagem}
