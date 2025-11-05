@@ -25,7 +25,7 @@ const Login = ({ onLoginSucesso }) => {
       const resposta = await window.ipc.login(usuario, senha);
 
       if (resposta.success) {
-        setMensagem("✅ Login realizado com sucesso!");
+        setMensagem("Login realizado com sucesso!");
         setTimeout(() => onLoginSucesso(), 1000);
       } else {
         setMensagem(resposta.message || "Usuário ou senha incorretos.");
