@@ -12,6 +12,7 @@ export default function App() {
         <Dashboard />
       ) : (
         <Login onLoginSucesso={() => setLogado(true)} />
+        
       )}
     </>
   );

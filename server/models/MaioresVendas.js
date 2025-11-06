@@ -4,7 +4,7 @@ export async function getMaioresVendas() {
   try {
     const connection = await getConnection();
 
-    const [rows] = await connection.query("select * from  qtdvenda;");
+    const [rows] = await connection.query("select * from  siscorp.qtdvenda;");
 
     await connection.end();
 

@@ -4,8 +4,8 @@ import backgroundImg from "../images/back.png";
 import logoImg from "../images/logo reansparente.png";
 
 const Login = ({ onLoginSucesso }) => {
-  const [usuario, setUsuario] = useState("pedro");
-  const [senha, setSenha] = useState("123");
+  const [usuario, setUsuario] = useState("");
+  const [senha, setSenha] = useState("");
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [mensagem, setMensagem] = useState("");
   const [carregando, setCarregando] = useState(false);
@@ -25,7 +25,7 @@ const Login = ({ onLoginSucesso }) => {
       const resposta = await window.ipc.login(usuario, senha);
 
       if (resposta.success) {
-        setMensagem("✅ Login realizado com sucesso!");
+        setMensagem("Login realizado com sucesso!");
         setTimeout(() => onLoginSucesso(), 1000);
       } else {
         setMensagem(resposta.message || "Usuário ou senha incorretos.");
@@ -97,7 +97,7 @@ const Login = ({ onLoginSucesso }) => {
           {mensagem && (
             <p
               className={`mt-2 ${
-                mensagem.includes("✅") ? "text-green-500" : "text-red-500"
+                mensagem.includes() ? "text-red-500" : "text-green-500"
               }`}
             >
               {mensagem}
