@@ -1,19 +1,18 @@
 import mysql from "mysql2/promise";
+import { config } from "dotenv";
 
-const HOST = "mysql-1d9027ca-joaotoledo-bd.e.aivencloud.com";
-const DATABASE = "siscorp";
-const PORT = 13231
+config()
 
 let lastCredentials = null;
 
 export async function conn({ user, password }) {
   try {
     const connection = await mysql.createConnection({
-      host: HOST,
+      host: process.env.HOST,
       user,
       password,
-      port: PORT,
-      database: DATABASE,
+      port: process.env.PORT,
+      database: process.env.DATABASE,
     });
 
     await connection.ping();
@@ -36,10 +35,10 @@ export async function getConnection() {
   if (!creds) throw new Error("Nenhum usuário logado.");
 
   return await mysql.createConnection({
-    host: HOST,
+    host: process.env.HOST,
     user: creds.user,
     password: creds.password,
-    port: PORT,
-    database: DATABASE,
+    port: process.env.PORT,
+    database: process.env.DATABASE,
   });
 }
