@@ -1,7 +1,10 @@
 import { app, BrowserWindow } from 'electron';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import './server/routers/RoutersIPC.js';
+import './server/routers/authIPC.js';
+import './server/routers/CategoriasIPC.js'
+import './server/routers/ProdutosIPC.js'
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

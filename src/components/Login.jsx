@@ -26,12 +26,11 @@ const Login = ({ onLoginSucesso }) => {
 
       if (resposta.success) {
         setMensagem("Login realizado com sucesso!");
-        setTimeout(() => onLoginSucesso(), 1000);
+        setTimeout(() => onLoginSucesso(resposta), 800);
       } else {
-        setMensagem(resposta.message || "Usuário ou senha incorretos.");
+        setMensagem(resposta.error || "Usuário ou senha incorretos.");
       }
-    } catch (error) {
-      console.error("Erro ao fazer login:", error);
+    } catch {
       setMensagem("Erro interno. Tente novamente mais tarde.");
     } finally {
       setCarregando(false);
@@ -97,7 +96,7 @@ const Login = ({ onLoginSucesso }) => {
           {mensagem && (
             <p
               className={`mt-2 ${
-                mensagem.includes() ? "text-red-500" : "text-green-500"
+                mensagem.includes("sucesso") ? "text-green-500" : "text-red-500"
               }`}
             >
               {mensagem}

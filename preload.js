@@ -1,65 +1,47 @@
 import { contextBridge, ipcRenderer } from "electron";
 
 contextBridge.exposeInMainWorld("ipc", {
-
   login: async (usuario, senha) => {
     return await ipcRenderer.invoke("login", { usuario, senha });
   },
 
-  getPermissions: async () => {
-    return await ipcRenderer.invoke("get-permissions");
+  getPermissions: async (idUsuario) => {
+    return await ipcRenderer.invoke("get-permissions", idUsuario);
   },
 
-  getMaioresVendas: async () => {
-    return await ipcRenderer.invoke("get-MaioresVendas");
+  categorias: {
+    listar: async () => {
+      return await ipcRenderer.invoke("categorias:listar");
+    },
+    buscarPorId: async (id) => {
+      return await ipcRenderer.invoke("categorias:buscarPorId", id);
+    },
+    criar: async (nome) => {
+      return await ipcRenderer.invoke("categorias:criar", nome);
+    },
+    editar: async (id, nome) => {
+      return await ipcRenderer.invoke("categorias:editar", { id, nome });
+    },
+    remover: async (id) => {
+      return await ipcRenderer.invoke("categorias:remover", id);
+    },
   },
 
-  getProdutos: async () => {
-    return await ipcRenderer.invoke("get-produtos");
+  produtos: {
+    listar: async () => {
+      return await ipcRenderer.invoke("produtos:listar");
+    },
+    buscarPorId: async (id) => {
+      return await ipcRenderer.invoke("produtos:buscarPorId", id);
+    },
+    criar: async (nome, preco, categoriaId) => {
+      return await ipcRenderer.invoke("produtos:criar", { nome, preco, categoriaId });
+    },
+    editar: async (id, nome, preco, categoriaId) => {
+      return await ipcRenderer.invoke("produtos:editar", { id, nome, preco, categoriaId });
+    },
+    remover: async (id) => {
+      return await ipcRenderer.invoke("produtos:remover", id);
+    },
   },
-
-  createProduto: async (nome, categoria, preco) => {
-    return await ipcRenderer.invoke("create-produto", { nome, categoria, preco });
-  },
-
-  updateProduto: async (produto) => {
-    return await ipcRenderer.invoke("update-produto", produto);
-  },
-
-  deleteProduto: async (idProduto) => {
-    return await ipcRenderer.invoke("delete-produto", idProduto);
-  },
-
-  getUsuarios: async () => {
-    return await ipcRenderer.invoke("get-usuarios");
-  },
-
-  createUsuario: async ({ nome, login, senha, idFuncao }) => {
-    return await ipcRenderer.invoke("create-usuario", { nome, login, senha, idFuncao });
-  },
-
-  updateUsuario: async (usuario) => {
-    return await ipcRenderer.invoke("update-usuario", usuario);
-  },
-
-  deleteUsuario: async (idUsuario) => {
-    return await ipcRenderer.invoke("delete-usuario", idUsuario);
-  },
-
-  getFuncoes: async () => {
-    return await ipcRenderer.invoke("get-funcoes");
-  },
-
-  createFuncao: async (nome, privilegios) => {
-    return await ipcRenderer.invoke("create-funcao", { nome, privilegios });
-  },
-
-  updateFuncao: async (funcao) => {
-    return await ipcRenderer.invoke("update-funcao", funcao);
-  },
-
-  deleteFuncao: async (idFuncao) => {
-    return await ipcRenderer.invoke("delete-funcao", idFuncao);
-  },
-
 });

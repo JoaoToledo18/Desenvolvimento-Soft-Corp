@@ -1,68 +1,70 @@
 import { getConnection } from "../db.js";
 
-export async function getAllProdutos() {
-  try {
-    const connection = await getConnection();
-
-    const [rows] = await connection.query(
-      "SELECT idProduto, nome, categoria, preco FROM produtos"
-    );
-
-    await connection.end();
-    return { success: true, produtos: rows };
-  } catch (err) {
-    console.error("Erro ao buscar produtos:", err.message);
-    return { success: false, message: "Erro ao buscar produtos." };
-  }
+// Listar produtos ativos
+export async function listarProdutos() {
+  const connection = await getConnection();
+  const [rows] = await connection.query(
+    `
+    SELECT p.*, c.nome AS categoria_nome
+    FROM produtos p
+    LEFT JOIN categorias c ON p.categorias_idCategorias = c.idCategorias
+    WHERE p.ativo = 1
+    `
+  );
+  await connection.end();
+  return rows;
 }
 
-export async function createProduto({ nome, categoria, preco }) {
-  try {
-    const connection = await getConnection();
-
-    const [result] = await connection.query(
-      "INSERT INTO produtos (nome, categoria, preco) VALUES (?, ?, ?)",
-      [nome, categoria, preco]
-    );
-
-    await connection.end();
-    return { success: true, id: result.insertId };
-  } catch (err) {
-    console.error("Erro ao criar produto:", err.message);
-    return { success: false, message: "Erro ao criar produto." };
-  }
+// Buscar produto por ID
+export async function buscarProdutoPorId(id) {
+  const connection = await getConnection();
+  const [rows] = await connection.query(
+    `
+    SELECT p.*, c.nome AS categoria_nome
+    FROM produtos p
+    LEFT JOIN categorias c ON p.categorias_idCategorias = c.idCategorias
+    WHERE p.idProdutos = ? AND p.ativo = 1
+    `,
+    [id]
+  );
+  await connection.end();
+  return rows[0];
 }
 
-export async function updateProduto({ idProduto, nome, categoria, preco }) {
-  try {
-    const connection = await getConnection();
-
-    const [result] = await connection.query(
-      "UPDATE produtos SET nome = ?, categoria = ?, preco = ? WHERE idProduto = ?",
-      [nome, categoria, preco, idProduto]
-    );
-
-    await connection.end();
-    return { success: result.affectedRows > 0 };
-  } catch (err) {
-    console.error("Erro ao atualizar produto:", err.message);
-    return { success: false, message: "Erro ao atualizar produto." };
-  }
+// Adicionar novo produto
+export async function adicionarProduto(nome, preco, categoriaId) {
+  const connection = await getConnection();
+  const [result] = await connection.query(
+    `INSERT INTO produtos (nome, preco, ativo, categorias_idCategorias)
+     VALUES (?, ?, 1, ?)`,
+    [nome, preco, categoriaId]
+  );
+  await connection.end();
+  return result.insertId;
 }
 
-export async function deleteProduto(idProduto) {
-  try {
-    const connection = await getConnection();
+// Atualizar produto
+export async function atualizarProduto(id, nome, preco, categoriaId) {
+  const connection = await getConnection();
+  const [result] = await connection.query(
+    `
+    UPDATE produtos 
+    SET nome = ?, preco = ?, categorias_idCategorias = ? 
+    WHERE idProdutos = ?
+    `,
+    [nome, preco, categoriaId, id]
+  );
+  await connection.end();
+  return result.affectedRows > 0;
+}
 
-    const [result] = await connection.query(
-      "DELETE FROM produtos WHERE idProduto = ?",
-      [idProduto]
-    );
-
-    await connection.end();
-    return { success: result.affectedRows > 0 };
-  } catch (err) {
-    console.error("Erro ao excluir produto:", err.message);
-    return { success: false, message: "Erro ao excluir produto." };
-  }
+// "Remover" produto (soft delete)
+export async function desativarProduto(id) {
+  const connection = await getConnection();
+  const [result] = await connection.query(
+    `UPDATE produtos SET ativo = 0 WHERE idProdutos = ?`,
+    [id]
+  );
+  await connection.end();
+  return result.affectedRows > 0;
 }
