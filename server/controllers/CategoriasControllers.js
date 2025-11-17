@@ -10,10 +10,12 @@ import { canUser } from "../controllers/PermissoesController.js";
 
 const tabela = "produtos";
 
-// Listar todas as categorias ativas
 export async function listarTodasCategorias() {
   if (!canUser(tabela, "select")) {
-    return { success: false, message: "Permissão negada para listar categorias." };
+    return {
+      success: false,
+      message: "Permissão negada para listar categorias.",
+    };
   }
 
   try {
@@ -25,10 +27,12 @@ export async function listarTodasCategorias() {
   }
 }
 
-// Buscar por ID
 export async function obterCategoriaPorId(id) {
   if (!canUser(tabela, "select")) {
-    return { success: false, message: "Permissão negada para visualizar categoria." };
+    return {
+      success: false,
+      message: "Permissão negada para visualizar categoria.",
+    };
   }
 
   try {
@@ -43,10 +47,12 @@ export async function obterCategoriaPorId(id) {
   }
 }
 
-// Criar nova categoria
 export async function criarCategoria(nome) {
   if (!canUser(tabela, "insert")) {
-    return { success: false, message: "Permissão negada para adicionar categoria." };
+    return {
+      success: false,
+      message: "Permissão negada para adicionar categoria.",
+    };
   }
 
   try {
@@ -58,16 +64,21 @@ export async function criarCategoria(nome) {
   }
 }
 
-// Atualizar categoria
 export async function editarCategoria(id, nome) {
   if (!canUser(tabela, "update")) {
-    return { success: false, message: "Permissão negada para atualizar categoria." };
+    return {
+      success: false,
+      message: "Permissão negada para atualizar categoria.",
+    };
   }
 
   try {
     const atualizado = await atualizarCategoria(id, nome);
     if (!atualizado) {
-      return { success: false, message: "Categoria não encontrada ou não atualizada." };
+      return {
+        success: false,
+        message: "Categoria não encontrada ou não atualizada.",
+      };
     }
     return { success: true, message: "Categoria atualizada com sucesso." };
   } catch (err) {
@@ -76,16 +87,21 @@ export async function editarCategoria(id, nome) {
   }
 }
 
-// "Remover" categoria (soft delete)
 export async function removerCategoria(id) {
   if (!canUser(tabela, "delete")) {
-    return { success: false, message: "Permissão negada para desativar categoria." };
+    return {
+      success: false,
+      message: "Permissão negada para desativar categoria.",
+    };
   }
 
   try {
     const desativado = await desativarCategoria(id);
     if (!desativado) {
-      return { success: false, message: "Categoria não encontrada ou já desativada." };
+      return {
+        success: false,
+        message: "Categoria não encontrada ou já desativada.",
+      };
     }
     return { success: true, message: "Categoria desativada com sucesso." };
   } catch (err) {

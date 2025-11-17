@@ -1,6 +1,5 @@
 import { getConnection } from "../db.js";
 
-// Listar produtos ativos
 export async function listarProdutos() {
   const connection = await getConnection();
   const [rows] = await connection.query(
@@ -15,7 +14,6 @@ export async function listarProdutos() {
   return rows;
 }
 
-// Buscar produto por ID
 export async function buscarProdutoPorId(id) {
   const connection = await getConnection();
   const [rows] = await connection.query(
@@ -31,7 +29,6 @@ export async function buscarProdutoPorId(id) {
   return rows[0];
 }
 
-// Adicionar novo produto
 export async function adicionarProduto(nome, preco, categoriaId) {
   const connection = await getConnection();
   const [result] = await connection.query(
@@ -43,7 +40,6 @@ export async function adicionarProduto(nome, preco, categoriaId) {
   return result.insertId;
 }
 
-// Atualizar produto
 export async function atualizarProduto(id, nome, preco, categoriaId) {
   const connection = await getConnection();
   const [result] = await connection.query(
@@ -58,7 +54,6 @@ export async function atualizarProduto(id, nome, preco, categoriaId) {
   return result.affectedRows > 0;
 }
 
-// "Remover" produto (soft delete)
 export async function desativarProduto(id) {
   const connection = await getConnection();
   const [result] = await connection.query(

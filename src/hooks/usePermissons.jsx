@@ -32,7 +32,6 @@ export default function usePermissions(logado) {
         const resposta = await window.ipc.getPermissions();
 
         if (resposta.success && Array.isArray(resposta.permissions)) {
-          // Mapeia permissões para fácil acesso
           const map = {};
           resposta.permissions.forEach((p) => {
             map[p.nome_tabela.toLowerCase()] = {

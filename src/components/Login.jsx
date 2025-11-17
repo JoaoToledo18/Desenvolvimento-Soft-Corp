@@ -51,7 +51,10 @@ const Login = ({ onLoginSucesso }) => {
           />
         </div>
 
-        <form onSubmit={(e) => e.preventDefault()} className="text-left text-white">
+        <form
+          onSubmit={(e) => e.preventDefault()}
+          className="text-left text-white"
+        >
           <label htmlFor="usuario" className="block font-bold text-sm mb-1">
             USUÁRIO:
           </label>

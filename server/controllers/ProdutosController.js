@@ -10,10 +10,12 @@ import { canUser } from "../controllers/PermissoesController.js";
 
 const tabela = "produtos";
 
-// Listar todos os produtos ativos
 export async function listarTodosProdutos() {
   if (!canUser(tabela, "select")) {
-    return { success: false, message: "Permissão negada para listar produtos." };
+    return {
+      success: false,
+      message: "Permissão negada para listar produtos.",
+    };
   }
 
   try {
@@ -25,10 +27,12 @@ export async function listarTodosProdutos() {
   }
 }
 
-// Buscar produto por ID
 export async function obterProdutoPorId(id) {
   if (!canUser(tabela, "select")) {
-    return { success: false, message: "Permissão negada para visualizar produto." };
+    return {
+      success: false,
+      message: "Permissão negada para visualizar produto.",
+    };
   }
 
   try {
@@ -43,10 +47,12 @@ export async function obterProdutoPorId(id) {
   }
 }
 
-// Criar novo produto
 export async function criarProduto(nome, preco, categoriaId) {
   if (!canUser(tabela, "insert")) {
-    return { success: false, message: "Permissão negada para adicionar produto." };
+    return {
+      success: false,
+      message: "Permissão negada para adicionar produto.",
+    };
   }
 
   try {
@@ -58,16 +64,21 @@ export async function criarProduto(nome, preco, categoriaId) {
   }
 }
 
-// Atualizar produto
 export async function editarProduto(id, nome, preco, categoriaId) {
   if (!canUser(tabela, "update")) {
-    return { success: false, message: "Permissão negada para atualizar produto." };
+    return {
+      success: false,
+      message: "Permissão negada para atualizar produto.",
+    };
   }
 
   try {
     const atualizado = await atualizarProduto(id, nome, preco, categoriaId);
     if (!atualizado) {
-      return { success: false, message: "Produto não encontrado ou não atualizado." };
+      return {
+        success: false,
+        message: "Produto não encontrado ou não atualizado.",
+      };
     }
     return { success: true, message: "Produto atualizado com sucesso." };
   } catch (err) {
@@ -76,16 +87,21 @@ export async function editarProduto(id, nome, preco, categoriaId) {
   }
 }
 
-// "Remover" produto (soft delete)
 export async function removerProduto(id) {
   if (!canUser(tabela, "delete")) {
-    return { success: false, message: "Permissão negada para desativar produto." };
+    return {
+      success: false,
+      message: "Permissão negada para desativar produto.",
+    };
   }
 
   try {
     const desativado = await desativarProduto(id);
     if (!desativado) {
-      return { success: false, message: "Produto não encontrado ou já desativado." };
+      return {
+        success: false,
+        message: "Produto não encontrado ou já desativado.",
+      };
     }
     return { success: true, message: "Produto desativado com sucesso." };
   } catch (err) {

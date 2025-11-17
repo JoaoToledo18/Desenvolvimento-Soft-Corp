@@ -27,7 +27,6 @@ export function canUser(tableName, action) {
     (p) => p.nome_tabela.toLowerCase() === tableName.toLowerCase()
   );
 
-
   if (!permission) return false;
 
   switch (action.toLowerCase()) {
@@ -43,4 +42,3 @@ export function canUser(tableName, action) {
       return false;
   }
 }
-

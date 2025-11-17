@@ -5,6 +5,9 @@ import Menu from "./components/Menu";
 import Dashboard from "./components/Dashboard";
 import Gerenciamento from "./components/Produtos";
 import usePermissions from "./hooks/usePermissons";
+import Pedidos from "./components/Pedidos";
+import Vendas from "./components/Vendas";
+import Historico from "./components/Historico";
 
 export default function App() {
   const [logado, setLogado] = useState(false);
@@ -14,7 +17,8 @@ export default function App() {
   const alternarTema = () => setTemaEscuro(!temaEscuro);
   const logout = () => window.location.reload();
 
-  const { tabelasMenu, carregandoMenu, permissoesPorTabela } = usePermissions(logado);
+  const { tabelasMenu, carregandoMenu, permissoesPorTabela } =
+    usePermissions(logado);
 
   if (!logado) return <Login onLoginSucesso={() => setLogado(true)} />;
 
@@ -32,14 +36,29 @@ export default function App() {
         temaEscuro={temaEscuro}
       />
     ),
-    vendas: <Dashboard temaEscuro={temaEscuro} />,
-    "funcionários": <Dashboard temaEscuro={temaEscuro} />,
-    "histórico": <Dashboard temaEscuro={temaEscuro} />,
+    vendas: <Vendas temaEscuro={temaEscuro} />,
+    funcionários: <Dashboard temaEscuro={temaEscuro} />,
+    histórico: (
+      <Historico
+        permissoes={permissoesPorTabela?.vendas}
+        temaEscuro={temaEscuro}
+      />
+    ),
+    pedidos: (
+      <Pedidos
+        permissoes={permissoesPorTabela?.vendas}
+        temaEscuro={temaEscuro}
+      />
+    ),
   };
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Header temaEscuro={temaEscuro} alternarTema={alternarTema} logout={logout} />
+      <Header
+        temaEscuro={temaEscuro}
+        alternarTema={alternarTema}
+        logout={logout}
+      />
       <Menu
         tabelas={carregandoMenu ? [] : tabelasMenu}
         selecionado={paginaAtual}

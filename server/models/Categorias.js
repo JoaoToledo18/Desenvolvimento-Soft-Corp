@@ -1,22 +1,24 @@
-import { getConnection } from "../db.js";
+import {} from "../db.js";
 
-// Listar todas as categorias ativas
 export async function listarCategorias() {
   const connection = await getConnection();
-  const [rows] = await connection.query("SELECT * FROM categorias WHERE ativo = 1");
+  const [rows] = await connection.query(
+    "SELECT * FROM categorias WHERE ativo = 1"
+  );
   await connection.end();
   return rows;
 }
 
-// Buscar categoria por ID
 export async function buscarCategoriaPorId(id) {
   const connection = await getConnection();
-  const [rows] = await connection.query("SELECT * FROM categorias WHERE idCategorias = ?", [id]);
+  const [rows] = await connection.query(
+    "SELECT * FROM categorias WHERE idCategorias = ?",
+    [id]
+  );
   await connection.end();
   return rows[0];
 }
 
-// Adicionar nova categoria (já entra como ativa)
 export async function adicionarCategoria(nome) {
   const connection = await getConnection();
   const [result] = await connection.query(
@@ -27,7 +29,6 @@ export async function adicionarCategoria(nome) {
   return result.insertId;
 }
 
-// Atualizar nome da categoria
 export async function atualizarCategoria(id, nome) {
   const connection = await getConnection();
   const [result] = await connection.query(
@@ -38,7 +39,6 @@ export async function atualizarCategoria(id, nome) {
   return result.affectedRows > 0;
 }
 
-// "Deletar" categoria = desativar (ativo = 0)
 export async function desativarCategoria(id) {
   const connection = await getConnection();
   const [result] = await connection.query(

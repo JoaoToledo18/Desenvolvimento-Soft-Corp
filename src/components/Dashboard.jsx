@@ -7,7 +7,6 @@ import GraficoPolar from "./Charts/ChartPolar";
 export default function Dashboard({ temaEscuro, vendas, carregandoVendas }) {
   const [selecionado, setSelecionado] = useState(null);
 
-  // Dados fictícios para gráficos
   const labels = vendas?.map((item) => item.Produto) || [];
   const valores = vendas?.map((item) => item.TotalVendida) || [];
   const meses = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul"];
@@ -32,7 +31,10 @@ export default function Dashboard({ temaEscuro, vendas, carregandoVendas }) {
           desempenho={desempenho}
         />
       ) : (
-        <ConteudoSelecionado selecionado={selecionado} temaEscuro={temaEscuro} />
+        <ConteudoSelecionado
+          selecionado={selecionado}
+          temaEscuro={temaEscuro}
+        />
       )}
     </main>
   );
@@ -52,7 +54,9 @@ function DashboardMain({
 }) {
   return (
     <>
-      <h2 className="text-2xl font-bold mb-6 text-center">📊 Dashboard Principal</h2>
+      <h2 className="text-2xl font-bold mb-6 text-center">
+        📊 Dashboard Principal
+      </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         <Card titulo="Top Vendas" temaEscuro={temaEscuro}>
           {carregandoVendas ? (
@@ -87,7 +91,11 @@ function DashboardMain({
           />
         </Card>
 
-        <Card titulo="Desempenho Mensal" temaEscuro={temaEscuro} className="xl:col-span-2">
+        <Card
+          titulo="Desempenho Mensal"
+          temaEscuro={temaEscuro}
+          className="xl:col-span-2"
+        >
           <GraficoLinha
             labels={meses}
             valores={vendasMensais}
@@ -112,14 +120,17 @@ function Card({ titulo, temaEscuro, className = "", children }) {
       <h3 className="text-lg font-semibold mb-3 text-center text-red-700 dark:text-yellow-300">
         {titulo}
       </h3>
-      <div className="h-[300px] flex items-center justify-center">{children}</div>
+      <div className="h-[300px] flex items-center justify-center">
+        {children}
+      </div>
     </div>
   );
 }
 
 function ConteudoSelecionado({ selecionado, temaEscuro }) {
   if (selecionado === "Produtos") return <Produtos temaEscuro={temaEscuro} />;
-  if (selecionado === "Funcionários") return <Usuarios temaEscuro={temaEscuro} />;
+  if (selecionado === "Funcionários")
+    return <Usuarios temaEscuro={temaEscuro} />;
 
   return (
     <div

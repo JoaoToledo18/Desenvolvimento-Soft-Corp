@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 
 export default function Gerenciamento({ permissoes }) {
-  console.log("Permissões recebidas:", permissoes);
   const [tela, setTela] = useState("categorias");
   const [dados, setDados] = useState([]);
   const [categorias, setCategorias] = useState([]);
@@ -25,11 +24,7 @@ export default function Gerenciamento({ permissoes }) {
     try {
       if (tela === "categorias") {
         const res = await window.ipc.categorias.listar();
-        if (res?.success && Array.isArray(res.data)) {
-          setDados(res.data);
-        } else {
-          setDados([]);
-        }
+        setDados(res?.success && Array.isArray(res.data) ? res.data : []);
       } else {
         const prods = await window.ipc.produtos.listar();
         const cats = await window.ipc.categorias.listar();
@@ -39,11 +34,9 @@ export default function Gerenciamento({ permissoes }) {
         );
         setDados(prods?.success && Array.isArray(prods.data) ? prods.data : []);
       }
-    } catch (error) {
-      console.error("Erro ao carregar dados:", error);
+    } catch {
       setDados([]);
     }
-
     limparFormulario();
   }
 
@@ -74,12 +67,10 @@ export default function Gerenciamento({ permissoes }) {
           );
       }
       await carregarDados();
-    } catch (error) {
-      console.error("Erro ao salvar:", error);
-    }
+    } catch {}
   }
 
-  async function handleEditar(item) {
+  function handleEditar(item) {
     setEditando(true);
     if (tela === "categorias")
       setForm({ id: item.idCategorias, nome: item.nome });
@@ -97,32 +88,34 @@ export default function Gerenciamento({ permissoes }) {
       if (tela === "categorias") await window.ipc.categorias.remover(id);
       else await window.ipc.produtos.remover(id);
       await carregarDados();
-    } catch (error) {
-      console.error("Erro ao remover:", error);
-    }
+    } catch {}
   }
 
   return (
-    <div className="p-4 flex gap-6">
-      <div className="w-1/2">
-        <div className="flex gap-2 mb-4">
-          <button
-            className={`px-4 py-2 rounded ${
-              tela === "categorias" ? "bg-blue-600 text-white" : "bg-gray-200"
-            }`}
-            onClick={() => setTela("categorias")}
-          >
-            Categorias
-          </button>
-          <button
-            className={`px-4 py-2 rounded ${
-              tela === "produtos" ? "bg-blue-600 text-white" : "bg-gray-200"
-            }`}
-            onClick={() => setTela("produtos")}
-          >
-            Produtos
-          </button>
-        </div>
+    <div className="p-6 space-y-6">
+      <div className="flex gap-2">
+        <button
+          className={`px-4 py-2 rounded ${
+            tela === "categorias" ? "bg-blue-600 text-white" : "bg-gray-200"
+          }`}
+          onClick={() => setTela("categorias")}
+        >
+          Categorias
+        </button>
+        <button
+          className={`px-4 py-2 rounded ${
+            tela === "produtos" ? "bg-blue-600 text-white" : "bg-gray-200"
+          }`}
+          onClick={() => setTela("produtos")}
+        >
+          Produtos
+        </button>
+      </div>
+
+      <div className="bg-white shadow-md rounded p-4">
+        <h2 className="text-xl font-bold mb-4">
+          Lista de {tela === "categorias" ? "Categorias" : "Produtos"}
+        </h2>
 
         <table className="w-full border">
           <thead>
@@ -132,34 +125,40 @@ export default function Gerenciamento({ permissoes }) {
               {tela === "produtos" && (
                 <th className="p-2 text-left">Categoria</th>
               )}
-              {(podeEditar || podeRemover) && <th className="p-2">Ações</th>}
+              {(podeEditar || podeRemover) && (
+                <th className="p-2 text-center">Ações</th>
+              )}
             </tr>
           </thead>
+
           <tbody>
-            {Array.isArray(dados) && dados.length > 0 ? (
+            {dados.length > 0 ? (
               dados.map((item) => (
                 <tr
                   key={
                     tela === "categorias" ? item.idCategorias : item.idProdutos
                   }
+                  className="border-b"
                 >
-                  <td className="border p-2">{item.nome}</td>
+                  <td className="p-2">{item.nome}</td>
+
                   {tela === "produtos" && (
-                    <td className="border p-2">R$ {item.preco}</td>
+                    <>
+                      <td className="p-2">R$ {item.preco}</td>
+                      <td className="p-2">
+                        {categorias.find(
+                          (c) => c.idCategorias === item.categorias_idCategorias
+                        )?.nome || "-"}
+                      </td>
+                    </>
                   )}
-                  {tela === "produtos" && (
-                    <td className="border p-2">
-                      {categorias.find(
-                        (c) => c.idCategorias === item.categorias_idCategorias
-                      )?.nome || "-"}
-                    </td>
-                  )}
+
                   {(podeEditar || podeRemover) && (
-                    <td className="border p-2 flex gap-2 justify-center">
+                    <td className="p-2 text-center flex gap-2 justify-center">
                       {podeEditar && (
                         <button
                           onClick={() => handleEditar(item)}
-                          className="bg-yellow-400 px-2 py-1 rounded"
+                          className="bg-yellow-400 px-3 py-1 rounded"
                         >
                           Editar
                         </button>
@@ -173,7 +172,7 @@ export default function Gerenciamento({ permissoes }) {
                                 : item.idProdutos
                             )
                           }
-                          className="bg-red-500 text-white px-2 py-1 rounded"
+                          className="bg-red-500 text-white px-3 py-1 rounded"
                         >
                           Deletar
                         </button>
@@ -197,11 +196,12 @@ export default function Gerenciamento({ permissoes }) {
       </div>
 
       {(podeCriar || editando) && (
-        <div className="w-1/2 border p-4 rounded">
-          <h2 className="text-lg font-bold mb-4">
-            {editando ? "Editar" : "Nova"}{" "}
+        <div className="bg-white shadow-md rounded p-4">
+          <h2 className="text-xl font-bold mb-4">
+            {editando ? "Editar" : "Novo"}{" "}
             {tela === "categorias" ? "Categoria" : "Produto"}
           </h2>
+
           <form onSubmit={handleSubmit} className="flex flex-col gap-3">
             <input
               type="text"
@@ -211,6 +211,7 @@ export default function Gerenciamento({ permissoes }) {
               required
               className="border p-2 rounded"
             />
+
             {tela === "produtos" && (
               <>
                 <input
@@ -221,6 +222,7 @@ export default function Gerenciamento({ permissoes }) {
                   required
                   className="border p-2 rounded"
                 />
+
                 <select
                   value={form.categoriaId}
                   onChange={(e) =>
@@ -242,10 +244,11 @@ export default function Gerenciamento({ permissoes }) {
             <div className="flex gap-2">
               <button
                 type="submit"
-                className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                className="bg-green-600 text-white px-4 py-2 rounded"
               >
                 {editando ? "Atualizar" : "Criar"}
               </button>
+
               {editando && (
                 <button
                   type="button"

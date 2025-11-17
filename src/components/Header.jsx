@@ -6,11 +6,10 @@ const Header = ({ temaEscuro, alternarTema, logout }) => {
     <header
       className={`flex flex-col md:flex-row items-center justify-between p-4 transition-colors duration-300 ${
         temaEscuro
-          ? "bg-[#2c1a09] text-yellow-300" 
-          : "bg-gradient-to-r from-yellow-400 to-red-500 text-white" 
+          ? "bg-[#2c1a09] text-yellow-300"
+          : "bg-gradient-to-r from-yellow-400 to-red-500 text-white"
       }`}
     >
-
       <div className="flex items-center gap-3 mb-2 md:mb-0">
         <img
           src={logo}
