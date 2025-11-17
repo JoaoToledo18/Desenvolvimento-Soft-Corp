@@ -7,6 +7,7 @@ import "./server/routers/ProdutosIPC.js";
 import "./server/routers/PedidosIPC.js";
 import "./server/routers/VendasIPC.js";
 import "./server/routers/HistoricoIPC.js";
+import "./server/routers/UsuariosIPC.js"
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

@@ -94,4 +94,17 @@ contextBridge.exposeInMainWorld("ipc", {
       return await ipcRenderer.invoke("historico:buscarPorId", id);
     },
   },
+
+  usuarios: {
+    listar: () => ipcRenderer.invoke("usuarios:listar"),
+    criar: ({ login, senha }) =>
+      ipcRenderer.invoke("usuarios:criar", { login, senha }),
+    alterarPermissoes: ({ idUsuario, idPermissao, ativo }) =>
+      ipcRenderer.invoke("usuarios:alterarPermissoes", {
+        idUsuario,
+        idPermissao,
+        ativo,
+      }),
+    remover: (idUsuario) => ipcRenderer.invoke("usuarios:remover", idUsuario),
+  },
 });

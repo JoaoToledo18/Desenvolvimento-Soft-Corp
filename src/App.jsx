@@ -8,6 +8,7 @@ import usePermissions from "./hooks/usePermissons";
 import Pedidos from "./components/Pedidos";
 import Vendas from "./components/Vendas";
 import Historico from "./components/Historico";
+import Usuarios from "./components/Usuarios";
 
 export default function App() {
   const [logado, setLogado] = useState(false);
@@ -37,7 +38,11 @@ export default function App() {
       />
     ),
     vendas: <Vendas temaEscuro={temaEscuro} />,
-    funcionários: <Dashboard temaEscuro={temaEscuro} />,
+    funcionários: (
+      <Usuarios
+        permissoes={permissoesPorTabela?.funcionarios}
+      />
+    ),
     histórico: (
       <Historico
         permissoes={permissoesPorTabela?.vendas}
