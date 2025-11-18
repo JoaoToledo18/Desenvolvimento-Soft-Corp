@@ -3,14 +3,12 @@ import React, { useEffect, useState } from "react";
 export default function Usuarios({ permissoes }) {
   const [usuarios, setUsuarios] = useState([]);
 
-  // 🔹 Campos do formulário de criação
   const [novoUsuario, setNovoUsuario] = useState({
     nome: "",
     login: "",
     senha: "",
   });
 
-  // 🔹 Carregar usuários ao iniciar
   async function carregarUsuarios() {
     try {
       const retorno = await window.ipc.usuarios.listar();
@@ -31,7 +29,7 @@ export default function Usuarios({ permissoes }) {
     carregarUsuarios();
   }, []);
 
-  // 🔹 Criar usuário
+
   async function criarUsuario(e) {
     e.preventDefault();
 
@@ -46,7 +44,7 @@ export default function Usuarios({ permissoes }) {
       if (resultado?.sucesso) {
         alert("Usuário criado com sucesso!");
         setNovoUsuario({ nome: "", login: "", senha: "" });
-        carregarUsuarios(); // Atualiza a lista
+        carregarUsuarios(); 
       } else {
         alert("Erro ao criar usuário: " + (resultado?.erro || "Desconhecido"));
       }
@@ -56,7 +54,6 @@ export default function Usuarios({ permissoes }) {
     }
   }
 
-  // 🔹 Atualiza estado local e envia para o banco
   const togglePermissao = async (idUsuario, idPermissao, campo) => {
     const novos = usuarios.map((u) => {
       if (u.id !== idUsuario) return u;
@@ -89,7 +86,6 @@ export default function Usuarios({ permissoes }) {
     <div style={{ padding: 20 }}>
       <h2>Usuários e Permissões</h2>
 
-      {/* 🔹 Formulário de criação */}
       <div
         style={{
           padding: 15,
@@ -141,7 +137,6 @@ export default function Usuarios({ permissoes }) {
         </form>
       </div>
 
-      {/* 🔹 Lista de usuários */}
       {!usuarios.length ? (
         <p>Nenhum usuário encontrado.</p>
       ) : (
