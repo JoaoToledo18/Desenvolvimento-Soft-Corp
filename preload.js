@@ -97,14 +97,18 @@ contextBridge.exposeInMainWorld("ipc", {
 
   usuarios: {
     listar: () => ipcRenderer.invoke("usuarios:listar"),
-    criar: ({ login, senha }) =>
-      ipcRenderer.invoke("usuarios:criar", { login, senha }),
-    alterarPermissoes: ({ idUsuario, idPermissao, ativo }) =>
+
+    alterarPermissoes: ({ idUsuario, permissoes }) =>
       ipcRenderer.invoke("usuarios:alterarPermissoes", {
         idUsuario,
-        idPermissao,
-        ativo,
+        permissoes,
       }),
-    remover: (idUsuario) => ipcRenderer.invoke("usuarios:remover", idUsuario),
+
+    criar: ({ nome, login, senha }) =>
+      ipcRenderer.invoke("usuarios:criar", {
+        nome,
+        login,
+        senha,
+      }),
   },
 });

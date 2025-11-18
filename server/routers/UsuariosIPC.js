@@ -1,34 +1,20 @@
 import { ipcMain } from "electron";
-import {
-  listarUsuarios,
-  criarNovoUsuario,
-  alterarPermissoesUsuario,
-  removerUsuario,
-} from "../controllers/UsuariosController.js";
+import { listar, atualizar, criar } from "../controllers/UsuariosController.js";
 
-// Listar usuários com suas permissões
+// 🔹 Listar usuários + permissões
 ipcMain.handle("usuarios:listar", async () => {
-  return await listarUsuarios();
+  return await listar();
 });
 
-// Criar usuário
-ipcMain.handle(
-  "usuarios:criar",
-  async (event, { login, senha }) => {
-    return await criarNovoUsuario(login, senha);
-  }
-);
-
-// Alterar permissões de um usuário (recebe objeto permissoes)
+// 🔹 Atualizar permissões
 ipcMain.handle(
   "usuarios:alterarPermissoes",
-  async (event, { idUsuario, idPermissao, permissoes }) => {
-    // passa exatamente o que o front envia
-    return await alterarPermissoesUsuario(idUsuario, idPermissao, permissoes);
+  async (event, { idUsuario, permissoes }) => {
+    return await atualizar(idUsuario, permissoes);
   }
 );
 
-// Desativar usuário (ativo = 0)
-ipcMain.handle("usuarios:remover", async (event, idUsuario) => {
-  return await removerUsuario(idUsuario);
+// 🔹 Criar usuário (sistema + MySQL)
+ipcMain.handle("usuarios:criar", async (event, dadosUsuario) => {
+  return await criar(dadosUsuario);
 });
