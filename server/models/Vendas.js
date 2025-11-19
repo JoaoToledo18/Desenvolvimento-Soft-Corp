@@ -10,6 +10,7 @@ export async function listarVendasComItens() {
      FROM vendas v
      LEFT JOIN usuarios u ON u.idUsuarios = v.usuarios_idUsuarios
      LEFT JOIN itensVendas iv ON iv.vendas_idVendas = v.idVendas
+     WHERE v.status = 'pago'
      GROUP BY v.idVendas
      ORDER BY v.dataVenda DESC`
   );

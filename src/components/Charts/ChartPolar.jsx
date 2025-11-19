@@ -1,6 +1,13 @@
 import React from "react";
 import { PolarArea } from "react-chartjs-2";
-import { Chart as ChartJS, RadialLinearScale, ArcElement, Tooltip, Legend, Title } from "chart.js";
+import {
+  Chart as ChartJS,
+  RadialLinearScale,
+  ArcElement,
+  Tooltip,
+  Legend,
+  Title,
+} from "chart.js";
 
 ChartJS.register(RadialLinearScale, ArcElement, Tooltip, Legend, Title);
 

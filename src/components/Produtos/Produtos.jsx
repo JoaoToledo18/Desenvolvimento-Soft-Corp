@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-export default function Gerenciamento({ permissoes }) {
+export default function Gerenciamento({ permissoes, temaEscuro }) {
   const [tela, setTela] = useState("categorias");
   const [dados, setDados] = useState([]);
   const [categorias, setCategorias] = useState([]);
@@ -16,6 +16,29 @@ export default function Gerenciamento({ permissoes }) {
   const podeEditar = permissoes?.update || false;
   const podeRemover = permissoes?.delete || false;
 
+  // 🔥 Paleta escura/clara
+  const estilo = {
+    fundo: temaEscuro ? "bg-[#0d0703] text-yellow-200" : "bg-white text-black",
+    card: temaEscuro
+      ? "bg-[#1a0f06] border border-yellow-700"
+      : "bg-white border border-gray-300",
+    botaoAtivo: temaEscuro
+      ? "bg-yellow-600 text-black"
+      : "bg-blue-600 text-white",
+    botaoInativo: temaEscuro
+      ? "bg-[#2b1a0b] text-yellow-300"
+      : "bg-gray-200 text-black",
+    tabelaHeader: temaEscuro ? "bg-[#2c1808] text-yellow-300" : "bg-gray-100",
+    tabelaBorda: temaEscuro ? "border-yellow-600" : "border-gray-300",
+    input: temaEscuro
+      ? "bg-[#130a05] text-white border-yellow-700"
+      : "bg-white border-gray-400",
+    titulo: temaEscuro ? "text-yellow-300" : "text-black",
+  };
+
+  // ==============================
+  //        CARREGAR DADOS
+  // ==============================
   useEffect(() => {
     carregarDados();
   }, [tela]);
@@ -92,19 +115,23 @@ export default function Gerenciamento({ permissoes }) {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className={`p-6 space-y-6 min-h-screen ${estilo.fundo}`}>
+      {/* ==============================
+            MENU DE ALTERNÂNCIA
+      ============================== */}
       <div className="flex gap-2">
         <button
-          className={`px-4 py-2 rounded ${
-            tela === "categorias" ? "bg-blue-600 text-white" : "bg-gray-200"
+          className={`px-4 py-2 rounded transition ${
+            tela === "categorias" ? estilo.botaoAtivo : estilo.botaoInativo
           }`}
           onClick={() => setTela("categorias")}
         >
           Categorias
         </button>
+
         <button
-          className={`px-4 py-2 rounded ${
-            tela === "produtos" ? "bg-blue-600 text-white" : "bg-gray-200"
+          className={`px-4 py-2 rounded transition ${
+            tela === "produtos" ? estilo.botaoAtivo : estilo.botaoInativo
           }`}
           onClick={() => setTela("produtos")}
         >
@@ -112,21 +139,36 @@ export default function Gerenciamento({ permissoes }) {
         </button>
       </div>
 
-      <div className="bg-white shadow-md rounded p-4">
-        <h2 className="text-xl font-bold mb-4">
+      {/* ==============================
+            LISTAGEM
+      ============================== */}
+      <div className={`shadow-md rounded p-4 ${estilo.card}`}>
+        <h2 className={`text-xl font-bold mb-4 ${estilo.titulo}`}>
           Lista de {tela === "categorias" ? "Categorias" : "Produtos"}
         </h2>
 
-        <table className="w-full border">
+        <table className="w-full border-collapse">
           <thead>
-            <tr className="bg-gray-100">
-              <th className="p-2 text-left">Nome</th>
-              {tela === "produtos" && <th className="p-2 text-left">Preço</th>}
+            <tr className={`${estilo.tabelaHeader}`}>
+              <th className={`p-2 text-left border ${estilo.tabelaBorda}`}>
+                Nome
+              </th>
+
               {tela === "produtos" && (
-                <th className="p-2 text-left">Categoria</th>
+                <>
+                  <th className={`p-2 text-left border ${estilo.tabelaBorda}`}>
+                    Preço
+                  </th>
+                  <th className={`p-2 text-left border ${estilo.tabelaBorda}`}>
+                    Categoria
+                  </th>
+                </>
               )}
+
               {(podeEditar || podeRemover) && (
-                <th className="p-2 text-center">Ações</th>
+                <th className={`p-2 text-center border ${estilo.tabelaBorda}`}>
+                  Ações
+                </th>
               )}
             </tr>
           </thead>
@@ -138,7 +180,7 @@ export default function Gerenciamento({ permissoes }) {
                   key={
                     tela === "categorias" ? item.idCategorias : item.idProdutos
                   }
-                  className="border-b"
+                  className={`border-b ${estilo.tabelaBorda}`}
                 >
                   <td className="p-2">{item.nome}</td>
 
@@ -158,7 +200,7 @@ export default function Gerenciamento({ permissoes }) {
                       {podeEditar && (
                         <button
                           onClick={() => handleEditar(item)}
-                          className="bg-yellow-400 px-3 py-1 rounded"
+                          className="bg-yellow-500 text-black px-3 py-1 rounded"
                         >
                           Editar
                         </button>
@@ -172,7 +214,7 @@ export default function Gerenciamento({ permissoes }) {
                                 : item.idProdutos
                             )
                           }
-                          className="bg-red-500 text-white px-3 py-1 rounded"
+                          className="bg-red-600 text-white px-3 py-1 rounded"
                         >
                           Deletar
                         </button>
@@ -185,7 +227,7 @@ export default function Gerenciamento({ permissoes }) {
               <tr>
                 <td
                   colSpan={tela === "produtos" ? 4 : 2}
-                  className="text-center p-4 italic text-gray-500"
+                  className="text-center p-4 italic opacity-60"
                 >
                   Nenhum registro encontrado.
                 </td>
@@ -195,9 +237,12 @@ export default function Gerenciamento({ permissoes }) {
         </table>
       </div>
 
+      {/* ==============================
+            FORMULÁRIO
+      ============================== */}
       {(podeCriar || editando) && (
-        <div className="bg-white shadow-md rounded p-4">
-          <h2 className="text-xl font-bold mb-4">
+        <div className={`shadow-md rounded p-4 ${estilo.card}`}>
+          <h2 className={`text-xl font-bold mb-4 ${estilo.titulo}`}>
             {editando ? "Editar" : "Novo"}{" "}
             {tela === "categorias" ? "Categoria" : "Produto"}
           </h2>
@@ -209,7 +254,7 @@ export default function Gerenciamento({ permissoes }) {
               value={form.nome}
               onChange={(e) => setForm({ ...form, nome: e.target.value })}
               required
-              className="border p-2 rounded"
+              className={`rounded p-2 border ${estilo.input}`}
             />
 
             {tela === "produtos" && (
@@ -220,7 +265,7 @@ export default function Gerenciamento({ permissoes }) {
                   value={form.preco}
                   onChange={(e) => setForm({ ...form, preco: e.target.value })}
                   required
-                  className="border p-2 rounded"
+                  className={`rounded p-2 border ${estilo.input}`}
                 />
 
                 <select
@@ -229,7 +274,7 @@ export default function Gerenciamento({ permissoes }) {
                     setForm({ ...form, categoriaId: e.target.value })
                   }
                   required
-                  className="border p-2 rounded"
+                  className={`rounded p-2 border ${estilo.input}`}
                 >
                   <option value="">Selecione uma categoria</option>
                   {categorias.map((c) => (
@@ -253,7 +298,7 @@ export default function Gerenciamento({ permissoes }) {
                 <button
                   type="button"
                   onClick={limparFormulario}
-                  className="bg-gray-400 text-white px-4 py-2 rounded"
+                  className="bg-gray-500 text-white px-4 py-2 rounded"
                 >
                   Cancelar
                 </button>

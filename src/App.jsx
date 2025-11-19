@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import Login from "./components/Login";
 import Header from "./components/Header";
 import Menu from "./components/Menu";
-import Dashboard from "./components/Dashboard";
-import Gerenciamento from "./components/Produtos";
+import Dashboard from "./components/Dashboard/Dashboard";
+import Gerenciamento from "./components/Produtos/Produtos";
 import usePermissions from "./hooks/usePermissons";
-import Pedidos from "./components/Pedidos";
-import Vendas from "./components/Vendas";
-import Historico from "./components/Historico";
-import Usuarios from "./components/Usuarios";
+import Pedidos from "./components/Pedidos/Pedidos";
+import Vendas from "./components/Vendas/Vendas";
+import Historico from "./components/Historico/Historico";
+import Usuarios from "./components/Usuarios/Usuarios";
 
 export default function App() {
   const [logado, setLogado] = useState(false);
@@ -41,6 +41,7 @@ export default function App() {
     funcionários: (
       <Usuarios
         permissoes={permissoesPorTabela?.funcionarios}
+        temaEscuro={temaEscuro}
       />
     ),
     histórico: (

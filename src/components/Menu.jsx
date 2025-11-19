@@ -8,32 +8,49 @@ const Menu = ({ tabelas = [], selecionado, setSelecionado, temaEscuro }) => {
   const botaoBase =
     "flex-shrink-0 px-4 py-2 rounded font-semibold transition-all duration-200";
 
+  // Função para calcular estilo do botão
+  const estilo = (nome) =>
+    selecionado === nome
+      ? temaEscuro
+        ? "bg-yellow-500 text-black shadow-md"
+        : "bg-red-700 text-white shadow-md"
+      : temaEscuro
+      ? "bg-[#5a3515] text-yellow-200 hover:bg-[#70421c]"
+      : "bg-yellow-200 text-red-800 hover:bg-yellow-300";
+
   return (
     <nav className={`flex overflow-x-auto gap-2 p-2 ${baseClasses}`}>
       {tabelas.length === 0 ? (
         <p className="px-4 py-2 italic opacity-75">Carregando menu...</p>
       ) : (
-        tabelas.map((tabela) => {
-          const isSelecionado = selecionado === tabela;
-          const estiloBotao = isSelecionado
-            ? temaEscuro
-              ? "bg-yellow-500 text-black shadow-md"
-              : "bg-red-700 text-white shadow-md"
-            : temaEscuro
-            ? "bg-[#5a3515] text-yellow-200 hover:bg-[#70421c]"
-            : "bg-yellow-200 text-red-800 hover:bg-yellow-300";
+        <>
+          {/* 🔷 DASHBOARDS PRIMEIRO */}
+          <button
+            key="dashboards"
+            onClick={() => setSelecionado("dashboards")}
+            className={`${botaoBase} ${estilo("dashboards")}`}
+          >
+            Dashboards
+          </button>
 
-          return (
-            <button
-              key={tabela}
-              onClick={() => setSelecionado(tabela.toLowerCase())}
-              className={`${botaoBase} ${estiloBotao}`}
-              aria-current={isSelecionado ? "page" : undefined}
-            >
-              {tabela.charAt(0).toUpperCase() + tabela.slice(1)}
-            </button>
-          );
-        })
+          {/* 🔶 DEMAIS ITENS DO BANCO */}
+          {tabelas.map((tabela) => {
+            const nome =
+              typeof tabela === "string"
+                ? tabela
+                : tabela.nome || tabela.tabela || "";
+
+            return (
+              <button
+                key={nome}
+                onClick={() => setSelecionado(nome.toLowerCase())}
+                className={`${botaoBase} ${estilo(nome)}`}
+              >
+                {nome.charAt(0).toUpperCase() + nome.slice(1)}
+              </button>
+            );
+          })}
+        </>
       )}
     </nav>
   );

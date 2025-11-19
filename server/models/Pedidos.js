@@ -38,58 +38,6 @@ export async function criarVenda(nome, itens) {
          VALUES (?, ?, ?, ?)`,
         [item.quantidade, preco, vendaId, item.produtoId]
       );
-
-      const [ingredRows] = await connection.query(
-        `SELECT pi.ingredientes_idIngredientes AS ingredienteId, pi.quantidade AS quantidadePorUnidade
-         FROM produtosIngredientes pi
-         WHERE pi.produtos_idProdutos = ?`,
-        [item.produtoId]
-      );
-
-      for (const ing of ingredRows) {
-        const need = Number(ing.quantidadePorUnidade) * Number(item.quantidade);
-        if (!necessidadePorIngrediente[ing.ingredienteId])
-          necessidadePorIngrediente[ing.ingredienteId] = 0;
-        necessidadePorIngrediente[ing.ingredienteId] += need;
-      }
-    }
-
-    for (const ingredienteIdStr of Object.keys(necessidadePorIngrediente)) {
-      const ingredienteId = Number(ingredienteIdStr);
-      const totalDiminuir = Number(necessidadePorIngrediente[ingredienteId]);
-
-      const [estoqueRows] = await connection.query(
-        `SELECT idEstoque, qtdAtual FROM estoque WHERE ingredientes_idIngredientes = ? FOR UPDATE`,
-        [ingredienteId]
-      );
-
-      if (!estoqueRows.length) {
-        throw new Error(
-          `Estoque insuficiente: ingrediente ${ingredienteId} não encontrado`
-        );
-      }
-
-      let restanteParaDiminuir = totalDiminuir;
-
-      for (const linha of estoqueRows) {
-        if (restanteParaDiminuir <= 0) break;
-        const atual = Number(linha.qtdAtual);
-        const diminuir = Math.min(atual, restanteParaDiminuir);
-        const novo = atual - diminuir;
-
-        await connection.query(
-          `UPDATE estoque SET qtdAtual = ? WHERE idEstoque = ?`,
-          [novo, linha.idEstoque]
-        );
-
-        restanteParaDiminuir -= diminuir;
-      }
-
-      if (restanteParaDiminuir > 0) {
-        throw new Error(
-          `Estoque insuficiente para ingrediente ${ingredienteId}`
-        );
-      }
     }
 
     await connection.commit();

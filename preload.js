@@ -111,4 +111,25 @@ contextBridge.exposeInMainWorld("ipc", {
         senha,
       }),
   },
+
+  dashboard: {
+    categoriaVenda: async () => {
+      return await ipcRenderer.invoke("dashboard:categoriaVenda");
+    },
+    quantidadeVenda: async () => {
+      return await ipcRenderer.invoke("dashboard:quantidadeVenda");
+    },
+    vendaMes: async () => {
+      return await ipcRenderer.invoke("dashboard:vendaMes");
+    },
+    vendaUsuario: async () => {
+      return await ipcRenderer.invoke("dashboard:vendaUsuario");
+    },
+    vendaUsuarioPorMes: async (mesAno) => {
+      return await ipcRenderer.invoke("dashboard:vendaUsuarioPorMes", mesAno);
+    },
+    completo: async () => {
+      return await ipcRenderer.invoke("dashboard:completo");
+    },
+  },
 });

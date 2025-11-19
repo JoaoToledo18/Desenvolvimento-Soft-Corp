@@ -1,7 +1,7 @@
 import {
   listarUsuariosComPermissoes,
   atualizarPermissaoUsuario,
-  criarUsuarioMySQL
+  criarUsuarioMySQL,
 } from "../models/Usuarios.js";
 
 export async function listar() {

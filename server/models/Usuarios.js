@@ -108,7 +108,7 @@ export async function criarUsuarioMySQL({ nome, login, senha }) {
         `INSERT INTO usuariosPermissoes 
      (usuarios_idUsuarios, permissoes_idPermissoes, \`permisaoSelect\`, \`permisaoInsert\`, \`permisaoUpdate\`, \`permisaoDelete\`)
      VALUES (?, ?, 0, 0, 0, 0)`,
-        [idUsuario, perm.idPermissoes] 
+        [idUsuario, perm.idPermissoes]
       );
     }
 
