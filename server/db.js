@@ -9,11 +9,11 @@ let idUser = null;
 export async function conn({ user, password }) {
   try {
     const connection = await mysql.createConnection({
-      host: "mysql-1d9027ca-joaotoledo-bd.e.aivencloud.com",
+      host: process.env.HOST,
       user,
       password,
-      port: "13231",
-      database: "hamburgueria",
+      port: process.env.PORT,
+      database: process.env.DATABASE,
     });
 
     await connection.ping();
@@ -49,10 +49,10 @@ export async function getConnection() {
   if (!creds) throw new Error("Nenhum usuário logado.");
 
   return await mysql.createConnection({
-    host: "mysql-1d9027ca-joaotoledo-bd.e.aivencloud.com",
+    host: process.env.HOST,
     user: creds.user,
     password: creds.password,
-    port: "13231",
-    database: "hamburgueria",
+    port: process.env.PORT,
+    database: process.env.DATABASE,
   });
 }
