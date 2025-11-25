@@ -1,14 +1,16 @@
 import { app, BrowserWindow } from "electron";
 import path from "path";
 import { fileURLToPath } from "url";
+
+// IPC handlers
 import "./server/routers/authIPC.js";
 import "./server/routers/CategoriasIPC.js";
 import "./server/routers/ProdutosIPC.js";
 import "./server/routers/PedidosIPC.js";
 import "./server/routers/VendasIPC.js";
 import "./server/routers/HistoricoIPC.js";
-import "./server/routers/UsuariosIPC.js"
-import "./server/routers/DashboardIPC.js"
+import "./server/routers/UsuariosIPC.js";
+import "./server/routers/DashboardIPC.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -26,11 +28,14 @@ function createWindow() {
   });
 
   const isDev = !app.isPackaged;
-  const url = isDev
-    ? "http://localhost:5173"
-    : `file://${path.join(__dirname, "renderer/dist/index.html")}`;
 
-  win.loadURL(url);
+  if (isDev) {
+    // Ambiente de desenvolvimento (Vite)
+    win.loadURL("http://localhost:5173");
+  } else {
+    // Ambiente de produção (Electron-builder)
+    win.loadFile(path.join(__dirname, "dist/index.html"));
+  }
 }
 
 app.disableHardwareAcceleration();

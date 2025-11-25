@@ -9,7 +9,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "dist": "electron-builder"
   },
   "keywords": [],
   "author": "",
@@ -17,9 +18,7 @@
   "description": "",
   "dependencies": {
     "@tailwindcss/vite": "^4.1.16",
-    "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.3",
-    "builder": "^5.0.0",
     "chart.js": "^4.5.1",
     "dotenv": "^17.2.3",
     "mysql2": "^3.14.5",
@@ -36,6 +35,7 @@
     "autoprefixer": "^10.4.21",
     "concurrently": "^9.2.1",
     "electron": "^38.1.0",
+    "electron-builder": "^26.0.12",
     "eslint": "^9.36.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.22",
@@ -44,5 +44,26 @@
     "tailwindcss": "^4.1.16",
     "vite": "^7.1.7",
     "wait-on": "^9.0.1"
+  },
+  "build": {
+    "appId": "com.hamburgueria.app",
+    "productName": "Hamburgueria",
+    "directories": {
+      "output": "dist-electron"
+    },
+    "files": [
+      "dist/**",
+      "server/**",
+      "main.js",
+      "preload.js",
+      ".env",
+      "package.json"
+    ],
+    "extraMetadata": {
+      "main": "main.js"
+    },
+    "win": {
+      "target": "nsis"
+    }
   }
 }
