@@ -146,24 +146,29 @@ export default function Pedidos({ permissoes, temaEscuro }) {
         </h3>
 
         <div className="space-y-3">
-          {pedidos.filter((p) => (p.status ?? "").toLowerCase() !== "pago")
-            .length === 0 ? (
-            <div className="text-gray-500 italic">Nenhum pedido.</div>
+          {pedidos.filter((p) => {
+            const status = (p.status ?? "").toLowerCase();
+            return status !== "pago" && status !== "cancelado";
+          }).length === 0 ? (
+        <div className="text-gray-500 italic">Nenhum pedido.</div>
           ) : (
             pedidos
-              .filter((p) => (p.status ?? "").toLowerCase() !== "pago")
-              .map((p) => (
-                <PedidoCard
-                  key={p.idVendas ?? p.id ?? p.idVenda}
-                  p={p}
-                  STATUSES={STATUSES}
-                  temaEscuro={temaEscuro}
-                  alterarStatus={alterarStatus}
-                  verItens={verItens}
-                  podeRemover={podeRemover}
-                />
-              ))
-          )}
+            .filter((p) => {
+              const status = (p.status ?? "").toLowerCase();
+              return status !== "pago" && status !== "cancelado";
+            })
+          .map((p) => (
+            <PedidoCard
+              key={p.idVendas ?? p.id ?? p.idVenda}
+              p={p}
+              STATUSES={STATUSES}
+              temaEscuro={temaEscuro}
+              alterarStatus={alterarStatus}
+              verItens={verItens}
+              podeRemover={podeRemover}
+            />
+          ))
+        )}
         </div>
       </div>
     </div>
